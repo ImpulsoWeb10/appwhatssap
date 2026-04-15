@@ -1,169 +1,726 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>Controle de Clientes</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ClientesPro — Controle de Clientes</title>
 
-<!-- (SEU CSS CONTINUA IGUAL — NÃO MUDEI NADA) -->
-<style>
-/* (mantive seu CSS inteiro, não mexe aqui) */
-</style>
+  <!-- Google Fonts: Sora (display) + DM Sans (body) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700;800&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet" />
 
+  <style>
+    /* ── TOKENS ─────────────────────────────────────────── */
+    :root {
+      --bg:        #0d0f14;
+      --surface:   #161a22;
+      --card:      #1e2330;
+      --border:    #2a3040;
+      --accent:    #3ecf8e;
+      --accent2:   #2ea374;
+      --warn:      #f97316;
+      --danger:    #ef4444;
+      --text:      #e8eaf0;
+      --muted:     #7a8398;
+      --radius:    14px;
+      --shadow:    0 4px 24px rgba(0,0,0,.45);
+    }
+
+    /* ── RESET ──────────────────────────────────────────── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: 'DM Sans', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      padding: 0 0 60px;
+    }
+
+    /* ── HEADER ─────────────────────────────────────────── */
+    header {
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+      padding: 20px 28px;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      backdrop-filter: blur(8px);
+    }
+
+    .logo-icon {
+      width: 42px; height: 42px;
+      background: var(--accent);
+      border-radius: 12px;
+      display: grid; place-items: center;
+      font-size: 20px;
+      flex-shrink: 0;
+    }
+
+    header h1 {
+      font-family: 'Sora', sans-serif;
+      font-size: 1.3rem;
+      font-weight: 700;
+      color: var(--text);
+      letter-spacing: -.02em;
+    }
+
+    header p {
+      font-size: .78rem;
+      color: var(--muted);
+      margin-top: 1px;
+    }
+
+    .header-right {
+      margin-left: auto;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .badge-count {
+      background: var(--card);
+      border: 1px solid var(--border);
+      color: var(--accent);
+      font-family: 'Sora', sans-serif;
+      font-size: .8rem;
+      font-weight: 700;
+      padding: 4px 12px;
+      border-radius: 999px;
+    }
+
+    /* ── MAIN LAYOUT ────────────────────────────────────── */
+    main {
+      max-width: 960px;
+      margin: 0 auto;
+      padding: 32px 20px 0;
+    }
+
+    section-title {
+      display: block;
+      font-family: 'Sora', sans-serif;
+      font-size: .7rem;
+      font-weight: 700;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 14px;
+    }
+
+    /* ── FORM CARD ──────────────────────────────────────── */
+    .form-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 28px;
+      margin-bottom: 32px;
+      box-shadow: var(--shadow);
+      animation: slideDown .35s ease both;
+    }
+
+    .form-card h2 {
+      font-family: 'Sora', sans-serif;
+      font-size: 1.1rem;
+      font-weight: 700;
+      margin-bottom: 22px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .form-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+    }
+
+    .form-grid .full { grid-column: 1 / -1; }
+
+    label {
+      display: block;
+      font-size: .78rem;
+      font-weight: 600;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: .08em;
+      margin-bottom: 6px;
+    }
+
+    input, textarea {
+      width: 100%;
+      background: var(--surface);
+      border: 1.5px solid var(--border);
+      border-radius: 10px;
+      color: var(--text);
+      font-family: 'DM Sans', sans-serif;
+      font-size: .95rem;
+      padding: 11px 14px;
+      outline: none;
+      transition: border-color .2s, box-shadow .2s;
+    }
+
+    input::placeholder, textarea::placeholder { color: var(--muted); }
+
+    input:focus, textarea:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px rgba(62,207,142,.15);
+    }
+
+    textarea { resize: vertical; min-height: 80px; }
+
+    .btn-primary {
+      margin-top: 6px;
+      width: 100%;
+      background: var(--accent);
+      color: #0d0f14;
+      border: none;
+      border-radius: 10px;
+      font-family: 'Sora', sans-serif;
+      font-size: .95rem;
+      font-weight: 700;
+      padding: 13px 20px;
+      cursor: pointer;
+      transition: transform .15s, background .2s, box-shadow .2s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+
+    .btn-primary:hover {
+      background: var(--accent2);
+      box-shadow: 0 4px 20px rgba(62,207,142,.35);
+      transform: translateY(-1px);
+    }
+
+    .btn-primary:active { transform: translateY(0); }
+    .btn-primary:disabled { opacity: .5; cursor: not-allowed; transform: none; }
+
+    /* ── SEARCH ─────────────────────────────────────────── */
+    .search-row {
+      display: flex;
+      gap: 12px;
+      margin-bottom: 20px;
+      align-items: center;
+    }
+
+    .search-wrap {
+      position: relative;
+      flex: 1;
+    }
+
+    .search-wrap svg {
+      position: absolute;
+      left: 13px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--muted);
+      pointer-events: none;
+    }
+
+    #busca {
+      padding-left: 40px;
+      background: var(--card);
+      border-color: var(--border);
+    }
+
+    .btn-refresh {
+      background: var(--card);
+      border: 1.5px solid var(--border);
+      color: var(--text);
+      border-radius: 10px;
+      padding: 11px 16px;
+      cursor: pointer;
+      font-size: .85rem;
+      font-weight: 600;
+      display: flex; align-items: center; gap: 6px;
+      transition: border-color .2s, color .2s;
+      white-space: nowrap;
+    }
+
+    .btn-refresh:hover { border-color: var(--accent); color: var(--accent); }
+
+    /* ── CLIENT LIST ────────────────────────────────────── */
+    #lista-clientes { display: flex; flex-direction: column; gap: 12px; }
+
+    .cliente-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 20px 22px;
+      display: flex;
+      align-items: center;
+      gap: 18px;
+      transition: border-color .2s, transform .2s;
+      animation: slideUp .3s ease both;
+    }
+
+    .cliente-card:hover {
+      border-color: rgba(62,207,142,.35);
+      transform: translateY(-2px);
+    }
+
+    .cliente-card.link-enviado {
+      border-left: 3px solid var(--accent);
+    }
+
+    .avatar {
+      width: 46px; height: 46px;
+      border-radius: 12px;
+      background: linear-gradient(135deg, #1f5c42, #3ecf8e22);
+      border: 1.5px solid rgba(62,207,142,.25);
+      display: grid; place-items: center;
+      font-family: 'Sora', sans-serif;
+      font-weight: 800;
+      font-size: 1.1rem;
+      color: var(--accent);
+      flex-shrink: 0;
+    }
+
+    .cliente-info { flex: 1; min-width: 0; }
+
+    .cliente-nome {
+      font-family: 'Sora', sans-serif;
+      font-weight: 700;
+      font-size: 1rem;
+      color: var(--text);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .cliente-tel {
+      font-size: .83rem;
+      color: var(--muted);
+      margin-top: 2px;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .cliente-desc {
+      font-size: .82rem;
+      color: var(--muted);
+      margin-top: 4px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .status-badge {
+      font-size: .72rem;
+      font-weight: 700;
+      letter-spacing: .07em;
+      text-transform: uppercase;
+      padding: 3px 10px;
+      border-radius: 999px;
+      flex-shrink: 0;
+    }
+
+    .status-badge.enviado {
+      background: rgba(62,207,142,.15);
+      color: var(--accent);
+      border: 1px solid rgba(62,207,142,.3);
+    }
+
+    .status-badge.pendente {
+      background: rgba(249,115,22,.1);
+      color: var(--warn);
+      border: 1px solid rgba(249,115,22,.25);
+    }
+
+    .acoes {
+      display: flex;
+      gap: 8px;
+      flex-shrink: 0;
+    }
+
+    .btn-icon {
+      width: 38px; height: 38px;
+      border-radius: 10px;
+      border: 1.5px solid var(--border);
+      background: var(--surface);
+      cursor: pointer;
+      display: grid; place-items: center;
+      font-size: 1rem;
+      transition: border-color .2s, background .2s, transform .15s;
+    }
+
+    .btn-icon:hover { transform: scale(1.1); }
+    .btn-icon.wpp:hover { border-color: #25d366; background: rgba(37,211,102,.1); }
+    .btn-icon.toggle:hover { border-color: var(--accent); background: rgba(62,207,142,.1); }
+    .btn-icon.del:hover { border-color: var(--danger); background: rgba(239,68,68,.1); }
+
+    /* ── EMPTY STATE ────────────────────────────────────── */
+    .empty {
+      text-align: center;
+      padding: 60px 20px;
+      color: var(--muted);
+    }
+
+    .empty .empty-icon { font-size: 3rem; margin-bottom: 14px; opacity: .4; }
+    .empty p { font-size: .9rem; }
+
+    /* ── LOADING ────────────────────────────────────────── */
+    .loading {
+      text-align: center;
+      padding: 40px;
+      color: var(--muted);
+      font-size: .9rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+    }
+
+    .spinner {
+      width: 20px; height: 20px;
+      border: 2.5px solid var(--border);
+      border-top-color: var(--accent);
+      border-radius: 50%;
+      animation: spin .7s linear infinite;
+    }
+
+    /* ── TOAST ──────────────────────────────────────────── */
+    #toast-container {
+      position: fixed;
+      bottom: 24px;
+      right: 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      z-index: 9999;
+    }
+
+    .toast {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 13px 18px;
+      font-size: .88rem;
+      font-weight: 500;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      box-shadow: 0 8px 32px rgba(0,0,0,.5);
+      animation: toastIn .3s ease both;
+      max-width: 320px;
+    }
+
+    .toast.sucesso { border-color: rgba(62,207,142,.4); }
+    .toast.sucesso .toast-icon { color: var(--accent); }
+    .toast.erro { border-color: rgba(239,68,68,.4); }
+    .toast.erro .toast-icon { color: var(--danger); }
+    .toast.info { border-color: rgba(99,160,255,.4); }
+    .toast.info .toast-icon { color: #63a0ff; }
+
+    .toast-icon { font-size: 1.1rem; flex-shrink: 0; }
+    .toast.saindo { animation: toastOut .3s ease forwards; }
+
+    /* ── ANIMATIONS ─────────────────────────────────────── */
+    @keyframes slideDown {
+      from { opacity: 0; transform: translateY(-16px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes slideUp {
+      from { opacity: 0; transform: translateY(12px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes toastIn {
+      from { opacity: 0; transform: translateX(24px); }
+      to   { opacity: 1; transform: translateX(0); }
+    }
+
+    @keyframes toastOut {
+      to { opacity: 0; transform: translateX(24px); }
+    }
+
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* ── RESPONSIVE ─────────────────────────────────────── */
+    @media (max-width: 620px) {
+      .form-grid { grid-template-columns: 1fr; }
+      .form-grid .full { grid-column: 1; }
+
+      .cliente-card { flex-wrap: wrap; }
+      .acoes { width: 100%; justify-content: flex-end; }
+
+      .search-row { flex-wrap: wrap; }
+
+      header h1 { font-size: 1.1rem; }
+    }
+  </style>
 </head>
 <body>
-<div class="app">
 
-<header>
-  <div class="logo">👥</div>
-  <div>
-    <h1>Controle de Clientes</h1>
-    <p>Gerencie contatos e acompanhe o envio do link</p>
-  </div>
-</header>
+  <!-- ── HEADER ─────────────────────────────────────────── -->
+  <header>
+    <div class="logo-icon">👥</div>
+    <div>
+      <h1>ClientesPro</h1>
+      <p>Controle de clientes &amp; links de avaliação</p>
+    </div>
+    <div class="header-right">
+      <div class="badge-count" id="badge-count">0 clientes</div>
+    </div>
+  </header>
 
-<div class="stats">
-  <div class="stat-card">
-    <span>Total</span>
-    <span id="statTotal">0</span>
-  </div>
-  <div class="stat-card green">
-    <span>Enviado</span>
-    <span id="statSent">0</span>
-  </div>
-  <div class="stat-card orange">
-    <span>Pendentes</span>
-    <span id="statPending">0</span>
-  </div>
-</div>
+  <!-- ── MAIN ───────────────────────────────────────────── -->
+  <main>
 
-<div class="form-card">
-  <input id="nome" placeholder="Nome">
-  <input id="telefone" placeholder="Telefone">
-  <textarea id="descricao" placeholder="Descrição"></textarea>
-  <button onclick="salvarCliente()">Salvar</button>
-</div>
-
-<input id="busca" placeholder="Buscar..." oninput="renderLista()">
-
-<div id="lista"></div>
-
-</div>
-
-<div id="toast"></div>
-
-<script>
-const API_URL = "https://script.google.com/macros/s/AKfycbwPSmpusUrkztIp2_YLLbcJ3KGUUCJWTyRqoG860Tw6zqAADnn0793XGmMgzI0i2flohg/exec";
-
-let clientes = [];
-
-/* API */
-async function api(action,data={}){
-  try{
-    const res = await fetch(API_URL,{
-      method:"POST",
-      body:new URLSearchParams({action,...data})
-    });
-    return await res.json();
-  }catch(e){
-    console.error(e);
-    showToast("Erro API","error");
-    return null;
-  }
-}
-
-/* TOAST */
-function showToast(msg,tipo="success"){
-  const t=document.getElementById("toast");
-  t.textContent=msg;
-  t.className="show "+tipo;
-  setTimeout(()=>t.className="",2500);
-}
-
-/* SALVAR */
-async function salvarCliente(){
-  const nome=document.getElementById("nome").value.trim();
-  const telefone=document.getElementById("telefone").value.replace(/\D/g,'');
-  const descricao=document.getElementById("descricao").value.trim();
-
-  if(!nome||!telefone){
-    showToast("Preencha os campos","error");
-    return;
-  }
-
-  const res=await api("salvar",{nome,telefone,descricao});
-
-  if(res?.error){
-    showToast(res.error,"error");
-    return;
-  }
-
-  showToast("Salvo!");
-
-  document.getElementById("nome").value="";
-  document.getElementById("telefone").value="";
-  document.getElementById("descricao").value="";
-
-  carregarClientes();
-}
-
-/* CARREGAR */
-async function carregarClientes(){
-  const res=await api("listar");
-
-  if(!res){
-    document.getElementById("lista").innerHTML="Erro API (CORS)";
-    return;
-  }
-
-  clientes=res;
-  renderLista();
-  atualizarStats();
-}
-
-/* RENDER */
-function renderLista(){
-  const busca=document.getElementById("busca").value.toLowerCase();
-  const lista=document.getElementById("lista");
-
-  const filtrados=clientes.filter(c =>
-    c.nome.toLowerCase().includes(busca) ||
-    c.telefone.includes(busca)
-  );
-
-  if(filtrados.length===0){
-    lista.innerHTML="Nenhum cliente";
-    return;
-  }
-
-  lista.innerHTML=filtrados.map(c=>{
-    const wa=`https://wa.me/55${c.telefone}`;
-    return `
-      <div class="client-card">
+    <!-- FORMULÁRIO -->
+    <div class="form-card">
+      <h2>➕ Novo Cliente</h2>
+      <div class="form-grid">
         <div>
-          <b>${c.nome}</b><br>
-          ${c.telefone}<br>
-          ${c.descricao||""}
+          <label for="inp-nome">Nome completo</label>
+          <input id="inp-nome" type="text" placeholder="Ex: João da Silva" />
         </div>
-        <a href="${wa}" target="_blank">Whats</a>
+        <div>
+          <label for="inp-tel">Telefone (WhatsApp)</label>
+          <input id="inp-tel" type="tel" placeholder="Ex: 11999998888" maxlength="15" />
+        </div>
+        <div class="full">
+          <label for="inp-desc">O que comprou / serviço</label>
+          <textarea id="inp-desc" placeholder="Ex: Corte + barba premium"></textarea>
+        </div>
+        <div class="full">
+          <button class="btn-primary" id="btn-salvar" onclick="salvarCliente()">
+            💾 Salvar Cliente
+          </button>
+        </div>
       </div>
-    `;
-  }).join("");
-}
+    </div>
 
-/* STATS */
-function atualizarStats(){
-  const total=clientes.length;
-  const sent=clientes.filter(c=>c.linkEnviado).length;
+    <!-- BUSCA + REFRESH -->
+    <section-title>📋 Clientes Cadastrados</section-title>
+    <div class="search-row">
+      <div class="search-wrap">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+        <input id="busca" type="search" placeholder="Buscar por nome ou telefone…" oninput="filtrarClientes()" />
+      </div>
+      <button class="btn-refresh" onclick="carregarClientes()">
+        🔄 Atualizar
+      </button>
+    </div>
 
-  document.getElementById("statTotal").textContent=total;
-  document.getElementById("statSent").textContent=sent;
-  document.getElementById("statPending").textContent=total-sent;
-}
+    <!-- LISTA -->
+    <div id="lista-clientes"></div>
 
-/* INIT */
-window.onload=carregarClientes;
-</script>
+  </main>
 
+  <!-- ── TOASTS ──────────────────────────────────────────── -->
+  <div id="toast-container"></div>
+
+  <!-- ── SCRIPT ─────────────────────────────────────────── -->
+  <script>
+    // ============================================================
+    // ⚙️  CONFIGURAÇÃO — cole a URL do seu Apps Script aqui
+    // ============================================================
+    const API_URL = "COLE_AQUI_SUA_URL";
+    // ============================================================
+
+    let todosClientes = [];
+
+    // ── Formatar telefone ────────────────────────────────────
+    function formatarTelefone(tel) {
+      const n = String(tel).replace(/\D/g, "");
+      if (n.length === 11) return `(${n.slice(0,2)}) ${n.slice(2,7)}-${n.slice(7)}`;
+      if (n.length === 10) return `(${n.slice(0,2)}) ${n.slice(2,6)}-${n.slice(6)}`;
+      return tel;
+    }
+
+    // ── Inicial do nome ──────────────────────────────────────
+    function inicial(nome) {
+      return (nome || "?").trim().charAt(0).toUpperCase();
+    }
+
+    // ── Toast ────────────────────────────────────────────────
+    function toast(msg, tipo = "sucesso") {
+      const icons = { sucesso: "✅", erro: "❌", info: "ℹ️" };
+      const el = document.createElement("div");
+      el.className = `toast ${tipo}`;
+      el.innerHTML = `<span class="toast-icon">${icons[tipo]}</span> ${msg}`;
+      document.getElementById("toast-container").appendChild(el);
+      setTimeout(() => {
+        el.classList.add("saindo");
+        el.addEventListener("animationend", () => el.remove());
+      }, 3200);
+    }
+
+    // ── Carregar clientes da API ─────────────────────────────
+    async function carregarClientes() {
+      const lista = document.getElementById("lista-clientes");
+      lista.innerHTML = `<div class="loading"><div class="spinner"></div> Carregando clientes…</div>`;
+
+      try {
+        const res = await fetch(`${API_URL}?action=listar`);
+        const data = await res.json();
+
+        if (!data.sucesso) throw new Error(data.mensagem);
+
+        todosClientes = data.clientes || [];
+        renderizarClientes(todosClientes);
+        atualizarBadge(todosClientes.length);
+      } catch (err) {
+        lista.innerHTML = `<div class="empty"><div class="empty-icon">⚠️</div><p>Erro ao carregar: ${err.message}<br><small>Verifique a URL da API.</small></p></div>`;
+        toast("Erro ao carregar clientes.", "erro");
+      }
+    }
+
+    // ── Renderizar lista ─────────────────────────────────────
+    function renderizarClientes(clientes) {
+      const lista = document.getElementById("lista-clientes");
+
+      if (!clientes.length) {
+        lista.innerHTML = `<div class="empty"><div class="empty-icon">📭</div><p>Nenhum cliente encontrado.</p></div>`;
+        return;
+      }
+
+      lista.innerHTML = clientes.map((c, i) => `
+        <div class="cliente-card ${c.linkEnviado ? 'link-enviado' : ''}" id="card-${c.id}" style="animation-delay:${i * 40}ms">
+          <div class="avatar">${inicial(c.nome)}</div>
+          <div class="cliente-info">
+            <div class="cliente-nome">${escapeHtml(c.nome)}</div>
+            <div class="cliente-tel">📱 ${formatarTelefone(c.telefone)}</div>
+            ${c.descricao ? `<div class="cliente-desc">🛒 ${escapeHtml(c.descricao)}</div>` : ""}
+          </div>
+          <span class="status-badge ${c.linkEnviado ? 'enviado' : 'pendente'}">
+            ${c.linkEnviado ? "⭐ Enviado" : "⏳ Pendente"}
+          </span>
+          <div class="acoes">
+            <button class="btn-icon wpp" title="Abrir WhatsApp" onclick="abrirWhatsApp('${c.telefone}')">💬</button>
+            <button class="btn-icon toggle" title="${c.linkEnviado ? 'Marcar como não enviado' : 'Marcar como enviado'}"
+              onclick="toggleLink('${c.id}', ${!c.linkEnviado})">⭐</button>
+            <button class="btn-icon del" title="Excluir cliente" onclick="excluirCliente('${c.id}', '${escapeHtml(c.nome)}')">🗑️</button>
+          </div>
+        </div>
+      `).join("");
+    }
+
+    // ── Filtrar clientes (busca) ─────────────────────────────
+    function filtrarClientes() {
+      const q = document.getElementById("busca").value.toLowerCase();
+      const filtrados = todosClientes.filter(c =>
+        c.nome.toLowerCase().includes(q) ||
+        String(c.telefone).includes(q)
+      );
+      renderizarClientes(filtrados);
+    }
+
+    // ── Atualizar badge contador ─────────────────────────────
+    function atualizarBadge(n) {
+      document.getElementById("badge-count").textContent = `${n} cliente${n !== 1 ? "s" : ""}`;
+    }
+
+    // ── Salvar cliente ───────────────────────────────────────
+    async function salvarCliente() {
+      const nome    = document.getElementById("inp-nome").value.trim();
+      const tel     = document.getElementById("inp-tel").value.trim().replace(/\D/g, "");
+      const desc    = document.getElementById("inp-desc").value.trim();
+      const btn     = document.getElementById("btn-salvar");
+
+      if (!nome || !tel) { toast("Preencha nome e telefone.", "erro"); return; }
+      if (tel.length < 10) { toast("Telefone inválido (mínimo 10 dígitos).", "erro"); return; }
+
+      btn.disabled = true;
+      btn.innerHTML = `<div class="spinner" style="border-top-color:#0d0f14;width:18px;height:18px"></div> Salvando…`;
+
+      try {
+        const params = new URLSearchParams({ action: "salvar", nome, telefone: tel, descricao: desc });
+        const res = await fetch(`${API_URL}?${params}`);
+        const data = await res.json();
+
+        if (!data.sucesso) throw new Error(data.mensagem);
+
+        toast(`✅ ${nome} cadastrado com sucesso!`, "sucesso");
+        document.getElementById("inp-nome").value = "";
+        document.getElementById("inp-tel").value  = "";
+        document.getElementById("inp-desc").value = "";
+        await carregarClientes();
+      } catch (err) {
+        toast(err.message || "Erro ao salvar.", "erro");
+      } finally {
+        btn.disabled = false;
+        btn.innerHTML = "💾 Salvar Cliente";
+      }
+    }
+
+    // ── Excluir cliente ──────────────────────────────────────
+    async function excluirCliente(id, nome) {
+      if (!confirm(`Excluir o cliente "${nome}"? Esta ação é irreversível.`)) return;
+
+      const card = document.getElementById(`card-${id}`);
+      if (card) card.style.opacity = "0.4";
+
+      try {
+        const res = await fetch(`${API_URL}?action=excluir&id=${encodeURIComponent(id)}`);
+        const data = await res.json();
+        if (!data.sucesso) throw new Error(data.mensagem);
+
+        toast(`🗑️ ${nome} excluído.`, "info");
+        await carregarClientes();
+      } catch (err) {
+        if (card) card.style.opacity = "1";
+        toast(err.message || "Erro ao excluir.", "erro");
+      }
+    }
+
+    // ── Toggle link enviado ──────────────────────────────────
+    async function toggleLink(id, novoStatus) {
+      try {
+        const params = new URLSearchParams({ action: "toggleLink", id, status: novoStatus });
+        const res = await fetch(`${API_URL}?${params}`);
+        const data = await res.json();
+        if (!data.sucesso) throw new Error(data.mensagem);
+
+        const msg = novoStatus ? "⭐ Marcado como enviado!" : "↩️ Marcado como pendente.";
+        toast(msg, novoStatus ? "sucesso" : "info");
+        await carregarClientes();
+      } catch (err) {
+        toast(err.message || "Erro ao atualizar status.", "erro");
+      }
+    }
+
+    // ── Abrir WhatsApp ───────────────────────────────────────
+    function abrirWhatsApp(tel) {
+      const n = String(tel).replace(/\D/g, "");
+      const num = n.startsWith("55") ? n : `55${n}`;
+      window.open(`https://wa.me/${num}`, "_blank");
+    }
+
+    // ── Escape HTML ──────────────────────────────────────────
+    function escapeHtml(str) {
+      return String(str || "")
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;");
+    }
+
+    // ── Máscara de telefone ──────────────────────────────────
+    document.getElementById("inp-tel").addEventListener("input", function () {
+      let v = this.value.replace(/\D/g, "").slice(0, 11);
+      if (v.length > 10) v = v.replace(/^(\d{2})(\d{5})(\d{4})$/, "($1) $2-$3");
+      else if (v.length > 6) v = v.replace(/^(\d{2})(\d{4})(\d*)$/, "($1) $2-$3");
+      else if (v.length > 2) v = v.replace(/^(\d{2})(\d*)$/, "($1) $2");
+      this.value = v;
+    });
+
+    // ── Enter no formulário ──────────────────────────────────
+    ["inp-nome","inp-tel","inp-desc"].forEach(id => {
+      document.getElementById(id).addEventListener("keydown", e => {
+        if (e.key === "Enter" && !e.shiftKey) salvarCliente();
+      });
+    });
+
+    // ── Init ─────────────────────────────────────────────────
+    window.addEventListener("DOMContentLoaded", carregarClientes);
+  </script>
 </body>
 </html>
