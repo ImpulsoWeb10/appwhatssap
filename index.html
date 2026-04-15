@@ -1,21 +1,150 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <title>Controle de Clientes</title>
+
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f4f6f8;
+      margin: 0;
+      padding: 20px;
+    }
+
+    h1 {
+      text-align: center;
+    }
+
+    .container {
+      max-width: 800px;
+      margin: auto;
+    }
+
+    .form {
+      background: #fff;
+      padding: 15px;
+      border-radius: 10px;
+      margin-bottom: 20px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+
+    input, textarea {
+      width: 100%;
+      padding: 10px;
+      margin-bottom: 10px;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+    }
+
+    button {
+      width: 100%;
+      padding: 12px;
+      border: none;
+      background: #25D366;
+      color: white;
+      font-size: 16px;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background: #1ebe5d;
+    }
+
+    .lista {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .card {
+      background: white;
+      padding: 12px;
+      border-radius: 10px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .info {
+      max-width: 70%;
+    }
+
+    .nome {
+      font-weight: bold;
+    }
+
+    .desc {
+      font-size: 13px;
+      color: #666;
+    }
+
+    .btn-wa {
+      background: #25D366;
+      padding: 8px 10px;
+      border-radius: 6px;
+      color: white;
+      text-decoration: none;
+      font-size: 14px;
+    }
+
+    #toast {
+      position: fixed;
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: #333;
+      color: #fff;
+      padding: 10px 20px;
+      border-radius: 6px;
+      opacity: 0;
+      transition: 0.3s;
+    }
+
+    #toast.show {
+      opacity: 1;
+    }
+  </style>
+</head>
+
+<body>
+
+<div class="container">
+
+  <h1>Controle de Clientes</h1>
+
+  <div class="form">
+    <input id="nome" placeholder="Nome do cliente">
+    <input id="telefone" placeholder="Telefone">
+    <textarea id="descricao" placeholder="O que ele levou"></textarea>
+    <button onclick="salvarCliente()">Salvar Cliente</button>
+  </div>
+
+  <div id="lista" class="lista"></div>
+
+</div>
+
+<div id="toast"></div>
+
 <script>
 const API_URL = "https://script.google.com/macros/s/AKfycbylwmrBqDfi4Yr-wYwu3xPjaAcARaBTGcflz4gP_3cbp_fYyqGU2kV8aM0jzf888XosyA/exec";
 
-/* ================= TOAST ================= */
-function showToast(msg, tipo = 'success') {
+/* TOAST */
+function showToast(msg) {
   const t = document.getElementById('toast');
-  if (!t) return;
   t.textContent = msg;
-  t.className = `show ${tipo}`;
+  t.className = 'show';
   setTimeout(() => t.className = '', 3000);
 }
 
-/* ================= UTIL ================= */
+/* LIMPAR TELEFONE */
 function limparTelefone(tel) {
   return tel.replace(/\D/g, '');
 }
 
-/* ================= API ================= */
+/* API */
 async function api(action, data = {}) {
   try {
     const res = await fetch(API_URL, {
@@ -24,30 +153,23 @@ async function api(action, data = {}) {
     });
 
     const text = await res.text();
-
-    try {
-      return JSON.parse(text);
-    } catch (e) {
-      console.error("Resposta inválida:", text);
-      showToast("Erro na API", "error");
-      return null;
-    }
+    return JSON.parse(text);
 
   } catch (e) {
-    console.error("Erro conexão:", e);
-    showToast("Erro de conexão", "error");
+    console.error(e);
+    showToast("Erro conexão");
     return null;
   }
 }
 
-/* ================= SALVAR ================= */
+/* SALVAR */
 async function salvarCliente() {
-  const nome = document.getElementById('nome')?.value.trim();
-  const telefone = limparTelefone(document.getElementById('telefone')?.value);
-  const descricao = document.getElementById('descricao')?.value.trim();
+  const nome = document.getElementById('nome').value.trim();
+  const telefone = limparTelefone(document.getElementById('telefone').value);
+  const descricao = document.getElementById('descricao').value.trim();
 
   if (!nome || !telefone) {
-    showToast("Preencha nome e telefone", "error");
+    showToast("Preencha nome e telefone");
     return;
   }
 
@@ -56,49 +178,33 @@ async function salvarCliente() {
   if (!res) return;
 
   if (res.error) {
-    showToast(res.error, "error");
+    showToast(res.error);
     return;
   }
 
-  showToast("Cliente salvo!");
+  showToast("Salvo!");
 
-  document.getElementById('nome').value = "";
-  document.getElementById('telefone').value = "";
-  document.getElementById('descricao').value = "";
+  document.getElementById('nome').value = '';
+  document.getElementById('telefone').value = '';
+  document.getElementById('descricao').value = '';
 
   carregarClientes();
 }
 
-/* ================= LISTAR ================= */
+/* LISTAR */
 async function carregarClientes() {
-  const listaEl = document.getElementById('lista');
-
-  if (!listaEl) {
-    console.error("Elemento #lista não encontrado");
-    return;
-  }
-
-  listaEl.innerHTML = "<div style='padding:20px'>Carregando...</div>";
+  const lista = document.getElementById('lista');
+  lista.innerHTML = "Carregando...";
 
   const clientes = await api("listar");
 
   if (!clientes || !Array.isArray(clientes)) {
-    listaEl.innerHTML = "<div style='padding:20px'>Erro ao carregar</div>";
-    atualizarStats([]);
+    lista.innerHTML = "Erro ao carregar";
     return;
   }
 
-  renderLista(clientes);
-  atualizarStats(clientes);
-}
-
-/* ================= RENDER ================= */
-function renderLista(clientes) {
-  const lista = document.getElementById('lista');
-  if (!lista) return;
-
   if (clientes.length === 0) {
-    lista.innerHTML = "<div style='padding:20px'>Nenhum cliente</div>";
+    lista.innerHTML = "Nenhum cliente";
     return;
   }
 
@@ -107,37 +213,23 @@ function renderLista(clientes) {
     const wa = `https://wa.me/${c.telefone}?text=${msg}`;
 
     return `
-      <div class="client-card ${c.linkEnviado ? 'sent' : ''}">
-        <div class="avatar">${c.nome ? c.nome[0] : "?"}</div>
-
-        <div class="client-info">
-          <div class="name">${c.nome || ''}</div>
-          <div class="phone">${c.telefone || ''}</div>
+      <div class="card">
+        <div class="info">
+          <div class="nome">${c.nome}</div>
+          <div>${c.telefone}</div>
           <div class="desc">${c.descricao || ''}</div>
-          ${c.linkEnviado ? '<span class="badge-sent">⭐ Enviado</span>' : ''}
         </div>
-
-        <div class="client-actions">
-          <a href="${wa}" target="_blank" class="btn btn-sm btn-whats">📲</a>
-        </div>
+        <a class="btn-wa" target="_blank" href="${wa}">Whats</a>
       </div>
     `;
   }).join('');
 }
 
-/* ================= STATS ================= */
-function atualizarStats(clientes) {
-  const total = clientes.length;
-  const enviados = clientes.filter(c => c.linkEnviado).length;
-
-  document.getElementById('statTotal').textContent = total;
-  document.getElementById('statSent').textContent = enviados;
-  document.getElementById('statPending').textContent = total - enviados;
-}
-
-/* ================= INIT ================= */
+/* INIT */
 window.onload = () => {
-  console.log("App iniciado");
   carregarClientes();
 };
 </script>
+
+</body>
+</html>
