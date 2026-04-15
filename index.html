@@ -1,128 +1,100 @@
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
-  <meta charset="UTF-8">
-  <title>Controle de Clientes</title>
+<meta charset="UTF-8">
+<title>Controle de Clientes</title>
 
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      background: #f4f6f8;
-      margin: 0;
-      padding: 20px;
-    }
+<style>
+body {
+  font-family: Arial;
+  background:#f4f6f8;
+  padding:20px;
+}
 
-    h1 {
-      text-align: center;
-    }
+.container {
+  max-width:700px;
+  margin:auto;
+}
 
-    .container {
-      max-width: 800px;
-      margin: auto;
-    }
+h1 {
+  text-align:center;
+}
 
-    .form {
-      background: #fff;
-      padding: 15px;
-      border-radius: 10px;
-      margin-bottom: 20px;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-    }
+.form {
+  background:#fff;
+  padding:15px;
+  border-radius:10px;
+  margin-bottom:20px;
+}
 
-    input, textarea {
-      width: 100%;
-      padding: 10px;
-      margin-bottom: 10px;
-      border: 1px solid #ccc;
-      border-radius: 6px;
-    }
+input, textarea {
+  width:100%;
+  padding:10px;
+  margin-bottom:10px;
+  border-radius:6px;
+  border:1px solid #ccc;
+}
 
-    button {
-      width: 100%;
-      padding: 12px;
-      border: none;
-      background: #25D366;
-      color: white;
-      font-size: 16px;
-      border-radius: 6px;
-      cursor: pointer;
-    }
+button {
+  width:100%;
+  padding:12px;
+  background:#25D366;
+  color:#fff;
+  border:none;
+  border-radius:6px;
+  cursor:pointer;
+}
 
-    button:hover {
-      background: #1ebe5d;
-    }
+.card {
+  background:#fff;
+  padding:10px;
+  border-radius:10px;
+  margin-bottom:10px;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+}
 
-    .lista {
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
-    }
+.btn {
+  background:#25D366;
+  color:#fff;
+  padding:8px;
+  border-radius:6px;
+  text-decoration:none;
+}
 
-    .card {
-      background: white;
-      padding: 12px;
-      border-radius: 10px;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
+#toast {
+  position:fixed;
+  bottom:20px;
+  left:50%;
+  transform:translateX(-50%);
+  background:#333;
+  color:#fff;
+  padding:10px;
+  border-radius:6px;
+  opacity:0;
+}
 
-    .info {
-      max-width: 70%;
-    }
-
-    .nome {
-      font-weight: bold;
-    }
-
-    .desc {
-      font-size: 13px;
-      color: #666;
-    }
-
-    .btn-wa {
-      background: #25D366;
-      padding: 8px 10px;
-      border-radius: 6px;
-      color: white;
-      text-decoration: none;
-      font-size: 14px;
-    }
-
-    #toast {
-      position: fixed;
-      bottom: 20px;
-      left: 50%;
-      transform: translateX(-50%);
-      background: #333;
-      color: #fff;
-      padding: 10px 20px;
-      border-radius: 6px;
-      opacity: 0;
-      transition: 0.3s;
-    }
-
-    #toast.show {
-      opacity: 1;
-    }
-  </style>
+#toast.show {
+  opacity:1;
+}
+</style>
 </head>
 
 <body>
 
 <div class="container">
 
-  <h1>Controle de Clientes</h1>
+<h1>Controle de Clientes</h1>
 
-  <div class="form">
-    <input id="nome" placeholder="Nome do cliente">
-    <input id="telefone" placeholder="Telefone">
-    <textarea id="descricao" placeholder="O que ele levou"></textarea>
-    <button onclick="salvarCliente()">Salvar Cliente</button>
-  </div>
+<div class="form">
+<input id="nome" placeholder="Nome do cliente">
+<input id="telefone" placeholder="Telefone">
+<textarea id="descricao" placeholder="O que ele levou"></textarea>
+<button onclick="salvarCliente()">Salvar Cliente</button>
+</div>
 
-  <div id="lista" class="lista"></div>
+<div id="lista"></div>
 
 </div>
 
@@ -132,103 +104,114 @@
 const API_URL = "https://script.google.com/macros/s/AKfycbylwmrBqDfi4Yr-wYwu3xPjaAcARaBTGcflz4gP_3cbp_fYyqGU2kV8aM0jzf888XosyA/exec";
 
 /* TOAST */
-function showToast(msg) {
+function showToast(msg){
   const t = document.getElementById('toast');
+  if(!t) return;
   t.textContent = msg;
   t.className = 'show';
-  setTimeout(() => t.className = '', 3000);
+  setTimeout(()=>t.className='',3000);
 }
 
-/* LIMPAR TELEFONE */
-function limparTelefone(tel) {
-  return tel.replace(/\D/g, '');
+/* TELEFONE */
+function limparTelefone(t){
+  return t.replace(/\D/g,'');
 }
 
-/* API */
-async function api(action, data = {}) {
-  try {
-    const res = await fetch(API_URL, {
-      method: "POST",
-      body: new URLSearchParams({ action, ...data })
+/* API UNIVERSAL */
+async function api(action,data={}){
+  try{
+    const res = await fetch(API_URL,{
+      method:'POST',
+      body:new URLSearchParams({action,...data})
     });
 
     const text = await res.text();
-    return JSON.parse(text);
 
-  } catch (e) {
-    console.error(e);
-    showToast("Erro conexão");
+    try{
+      return JSON.parse(text);
+    }catch{
+      console.error("Resposta inválida:",text);
+      return null;
+    }
+
+  }catch(e){
+    console.error("Erro fetch:",e);
     return null;
   }
 }
 
 /* SALVAR */
-async function salvarCliente() {
+async function salvarCliente(){
   const nome = document.getElementById('nome').value.trim();
   const telefone = limparTelefone(document.getElementById('telefone').value);
   const descricao = document.getElementById('descricao').value.trim();
 
-  if (!nome || !telefone) {
-    showToast("Preencha nome e telefone");
+  if(!nome || !telefone){
+    showToast("Preencha os campos");
     return;
   }
 
-  const res = await api("salvar", { nome, telefone, descricao });
+  const res = await api("salvar",{nome,telefone,descricao});
 
-  if (!res) return;
+  if(!res){
+    showToast("Erro na API");
+    return;
+  }
 
-  if (res.error) {
+  if(res.error){
     showToast(res.error);
     return;
   }
 
   showToast("Salvo!");
 
-  document.getElementById('nome').value = '';
-  document.getElementById('telefone').value = '';
-  document.getElementById('descricao').value = '';
+  nome.value="";
+  telefone.value="";
+  descricao.value="";
 
   carregarClientes();
 }
 
 /* LISTAR */
-async function carregarClientes() {
+async function carregarClientes(){
   const lista = document.getElementById('lista');
-  lista.innerHTML = "Carregando...";
+
+  lista.innerHTML="Carregando...";
 
   const clientes = await api("listar");
 
-  if (!clientes || !Array.isArray(clientes)) {
-    lista.innerHTML = "Erro ao carregar";
+  if(!clientes){
+    lista.innerHTML="⚠️ API bloqueada (401/CORS)<br>Corrija no Apps Script";
     return;
   }
 
-  if (clientes.length === 0) {
-    lista.innerHTML = "Nenhum cliente";
+  if(clientes.length===0){
+    lista.innerHTML="Nenhum cliente";
     return;
   }
 
-  lista.innerHTML = clientes.map(c => {
+  lista.innerHTML = clientes.map(c=>{
     const msg = encodeURIComponent(`Olá ${c.nome}, poderia avaliar nosso serviço?`);
     const wa = `https://wa.me/${c.telefone}?text=${msg}`;
 
     return `
       <div class="card">
-        <div class="info">
-          <div class="nome">${c.nome}</div>
-          <div>${c.telefone}</div>
-          <div class="desc">${c.descricao || ''}</div>
+        <div>
+          <b>${c.nome}</b><br>
+          ${c.telefone}<br>
+          ${c.descricao || ''}
         </div>
-        <a class="btn-wa" target="_blank" href="${wa}">Whats</a>
+        <a class="btn" target="_blank" href="${wa}">Whats</a>
       </div>
     `;
   }).join('');
 }
 
 /* INIT */
-window.onload = () => {
+window.onload = ()=>{
+  console.log("App iniciado");
   carregarClientes();
-};
+}
 </script>
 
 </body>
