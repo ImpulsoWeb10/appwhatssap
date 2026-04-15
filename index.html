@@ -1,0 +1,576 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Controle de Clientes</title>
+  <link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet"/>
+  <style>
+    /* ── Variáveis de Tema ─────────────────────────────────── */
+    :root {
+      --bg:          #f0ede8;
+      --surface:     #faf9f7;
+      --border:      #e2ddd6;
+      --text:        #1a1714;
+      --text-muted:  #7a736a;
+      --accent:      #2d6a4f;
+      --accent-lt:   #d8f3dc;
+      --accent-dark: #1b4332;
+      --warn:        #e76f51;
+      --warn-lt:     #fde8e2;
+      --gold:        #e9c46a;
+      --gold-lt:     #fdf5dc;
+      --radius:      12px;
+      --shadow:      0 2px 12px rgba(0,0,0,.08);
+      --transition:  .2s ease;
+    }
+
+    /* ── Reset & Base ──────────────────────────────────────── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Sora', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      padding: 24px 16px 60px;
+    }
+
+    /* ── Layout ────────────────────────────────────────────── */
+    .app { max-width: 820px; margin: 0 auto; }
+
+    /* ── Header ────────────────────────────────────────────── */
+    header {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      margin-bottom: 32px;
+    }
+    .logo {
+      width: 48px; height: 48px;
+      background: var(--accent);
+      border-radius: 14px;
+      display: grid; place-items: center;
+      font-size: 22px;
+      box-shadow: 0 4px 12px rgba(45,106,79,.35);
+      flex-shrink: 0;
+    }
+    header h1 { font-size: 1.5rem; font-weight: 700; letter-spacing: -.3px; }
+    header p  { font-size: .82rem; color: var(--text-muted); margin-top: 2px; }
+
+    /* ── Stats Bar ─────────────────────────────────────────── */
+    .stats {
+      display: flex;
+      gap: 12px;
+      margin-bottom: 24px;
+      flex-wrap: wrap;
+    }
+    .stat-card {
+      flex: 1 1 140px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 14px 18px;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+    .stat-card .label { font-size: .72rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: .6px; }
+    .stat-card .value { font-size: 1.6rem; font-weight: 700; font-family: 'JetBrains Mono', monospace; }
+    .stat-card.green .value { color: var(--accent); }
+    .stat-card.orange .value { color: var(--warn); }
+
+    /* ── Form Card ─────────────────────────────────────────── */
+    .form-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 24px;
+      margin-bottom: 24px;
+      box-shadow: var(--shadow);
+    }
+    .form-card h2 {
+      font-size: .9rem;
+      font-weight: 600;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: .7px;
+      margin-bottom: 18px;
+    }
+    .form-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+    }
+    .form-group { display: flex; flex-direction: column; gap: 6px; }
+    .form-group.full { grid-column: 1 / -1; }
+
+    label {
+      font-size: .78rem;
+      font-weight: 600;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: .5px;
+    }
+    input, textarea {
+      width: 100%;
+      padding: 10px 14px;
+      border: 1.5px solid var(--border);
+      border-radius: 8px;
+      font-family: 'Sora', sans-serif;
+      font-size: .88rem;
+      background: var(--bg);
+      color: var(--text);
+      transition: border-color var(--transition), box-shadow var(--transition);
+      outline: none;
+    }
+    input:focus, textarea:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px rgba(45,106,79,.12);
+    }
+    textarea { resize: vertical; min-height: 72px; }
+
+    /* ── Buttons ───────────────────────────────────────────── */
+    .btn {
+      display: inline-flex; align-items: center; justify-content: center;
+      gap: 7px;
+      padding: 10px 20px;
+      border: none; border-radius: 8px;
+      font-family: 'Sora', sans-serif;
+      font-size: .86rem; font-weight: 600;
+      cursor: pointer;
+      transition: all var(--transition);
+    }
+    .btn-primary {
+      background: var(--accent); color: #fff;
+      box-shadow: 0 3px 10px rgba(45,106,79,.3);
+    }
+    .btn-primary:hover { background: var(--accent-dark); transform: translateY(-1px); }
+    .btn-primary:active { transform: translateY(0); }
+
+    .btn-sm { padding: 6px 12px; font-size: .78rem; border-radius: 6px; }
+
+    .btn-whats  { background: #25D366; color: #fff; }
+    .btn-whats:hover  { background: #1da851; }
+
+    .btn-link-sent { background: var(--gold-lt); color: #7a5c00; border: 1.5px solid var(--gold); }
+    .btn-link-sent.active { background: var(--gold); color: #3d2e00; }
+    .btn-link-sent:hover { background: var(--gold); }
+
+    .btn-delete { background: var(--warn-lt); color: var(--warn); }
+    .btn-delete:hover { background: var(--warn); color: #fff; }
+
+    /* ── Search Bar ────────────────────────────────────────── */
+    .search-row {
+      display: flex; gap: 10px; align-items: center;
+      margin-bottom: 16px;
+    }
+    .search-wrap { position: relative; flex: 1; }
+    .search-wrap .icon {
+      position: absolute; left: 12px; top: 50%;
+      transform: translateY(-50%);
+      color: var(--text-muted); font-size: 15px; pointer-events: none;
+    }
+    .search-wrap input { padding-left: 36px; }
+    .count-badge {
+      background: var(--accent-lt);
+      color: var(--accent-dark);
+      font-size: .75rem; font-weight: 600;
+      padding: 4px 10px; border-radius: 20px;
+      font-family: 'JetBrains Mono', monospace;
+      white-space: nowrap;
+    }
+
+    /* ── List ──────────────────────────────────────────────── */
+    #lista { display: flex; flex-direction: column; gap: 10px; }
+
+    .empty-state {
+      text-align: center; padding: 48px 24px;
+      color: var(--text-muted); font-size: .88rem;
+    }
+    .empty-state .icon { font-size: 2.5rem; margin-bottom: 10px; }
+
+    /* ── Client Card ───────────────────────────────────────── */
+    .client-card {
+      background: var(--surface);
+      border: 1.5px solid var(--border);
+      border-radius: var(--radius);
+      padding: 16px 18px;
+      display: flex; align-items: center; gap: 14px;
+      transition: border-color var(--transition), box-shadow var(--transition);
+      animation: fadeIn .25s ease;
+    }
+    .client-card:hover { border-color: var(--accent); box-shadow: var(--shadow); }
+    .client-card.sent { border-color: var(--gold); background: var(--gold-lt); }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(6px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Avatar */
+    .avatar {
+      width: 42px; height: 42px; border-radius: 50%;
+      background: var(--accent-lt);
+      color: var(--accent-dark);
+      font-weight: 700; font-size: 1rem;
+      display: grid; place-items: center;
+      flex-shrink: 0;
+    }
+    .client-card.sent .avatar { background: var(--gold); color: #3d2e00; }
+
+    /* Info */
+    .client-info { flex: 1; min-width: 0; }
+    .client-info .name {
+      font-weight: 600; font-size: .92rem;
+      white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    }
+    .client-info .phone {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: .78rem; color: var(--text-muted); margin-top: 2px;
+    }
+    .client-info .desc {
+      font-size: .78rem; color: var(--text-muted);
+      margin-top: 4px;
+      white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    }
+
+    /* Badge */
+    .badge-sent {
+      font-size: .7rem; font-weight: 600;
+      background: var(--gold); color: #3d2e00;
+      padding: 2px 8px; border-radius: 20px;
+      display: inline-block; margin-top: 4px;
+    }
+
+    /* Actions */
+    .client-actions { display: flex; gap: 7px; flex-shrink: 0; flex-wrap: wrap; justify-content: flex-end; }
+
+    /* ── Toast ─────────────────────────────────────────────── */
+    #toast {
+      position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%) translateY(80px);
+      background: var(--text); color: #fff;
+      padding: 12px 22px; border-radius: 30px;
+      font-size: .85rem; font-weight: 500;
+      box-shadow: 0 6px 20px rgba(0,0,0,.2);
+      transition: transform .3s ease, opacity .3s ease;
+      opacity: 0; pointer-events: none; z-index: 9999;
+      white-space: nowrap;
+    }
+    #toast.show { transform: translateX(-50%) translateY(0); opacity: 1; }
+    #toast.error { background: var(--warn); }
+    #toast.success { background: var(--accent); }
+
+    /* ── Responsivo ────────────────────────────────────────── */
+    @media (max-width: 560px) {
+      .form-grid { grid-template-columns: 1fr; }
+      .client-actions { gap: 5px; }
+      .btn-sm { padding: 5px 9px; }
+    }
+  </style>
+</head>
+<body>
+<div class="app">
+
+  <!-- ── Header ── -->
+  <header>
+    <div class="logo">👥</div>
+    <div>
+      <h1>Controle de Clientes</h1>
+      <p>Gerencie contatos e acompanhe o envio do link de avaliação</p>
+    </div>
+  </header>
+
+  <!-- ── Stats ── -->
+  <div class="stats">
+    <div class="stat-card">
+      <span class="label">Total de clientes</span>
+      <span class="value" id="statTotal">0</span>
+    </div>
+    <div class="stat-card green">
+      <span class="label">Link enviado ✅</span>
+      <span class="value" id="statSent">0</span>
+    </div>
+    <div class="stat-card orange">
+      <span class="label">Pendentes ⏳</span>
+      <span class="value" id="statPending">0</span>
+    </div>
+  </div>
+
+  <!-- ── Formulário ── -->
+  <div class="form-card">
+    <h2>➕ Novo Cliente</h2>
+    <div class="form-grid">
+      <div class="form-group">
+        <label for="nome">Nome *</label>
+        <input type="text" id="nome" placeholder="Ex: João Silva" />
+      </div>
+      <div class="form-group">
+        <label for="telefone">Telefone *</label>
+        <input type="text" id="telefone" placeholder="Ex: 11999998888" />
+      </div>
+      <div class="form-group full">
+        <label for="descricao">Descrição</label>
+        <textarea id="descricao" placeholder="Ex: Instalação de ar-condicionado, Corte de cabelo..."></textarea>
+      </div>
+    </div>
+    <div style="margin-top: 16px; text-align: right;">
+      <button class="btn btn-primary" onclick="salvarCliente()">
+        💾 Salvar Cliente
+      </button>
+    </div>
+  </div>
+
+  <!-- ── Busca ── -->
+  <div class="search-row">
+    <div class="search-wrap">
+      <span class="icon">🔍</span>
+      <input type="text" id="busca" placeholder="Buscar por nome ou telefone..." oninput="renderLista()" />
+    </div>
+    <span class="count-badge" id="countBadge">0 clientes</span>
+  </div>
+
+  <!-- ── Lista ── -->
+  <div id="lista"></div>
+
+</div>
+
+<!-- ── Toast ── -->
+<div id="toast"></div>
+
+<script>
+  /* ─── Chave de armazenamento no localStorage ─── */
+  const STORAGE_KEY = 'clientes_app';
+
+  /* ─── Carregar dados do localStorage ─── */
+  function carregarClientes() {
+    try {
+      return JSON.parse(localStorage.getItem(STORAGE_KEY)) || [];
+    } catch {
+      return [];
+    }
+  }
+
+  /* ─── Salvar dados no localStorage ─── */
+  function salvarNoStorage(clientes) {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(clientes));
+  }
+
+  /* ─── Exibir toast de notificação ─── */
+  function showToast(msg, tipo = 'success') {
+    const t = document.getElementById('toast');
+    t.textContent = msg;
+    t.className = `show ${tipo}`;
+    clearTimeout(t._timer);
+    t._timer = setTimeout(() => { t.className = ''; }, 2800);
+  }
+
+  /* ─── Limpar e formatar telefone (apenas dígitos) ─── */
+  function limparTelefone(tel) {
+    return tel.replace(/\D/g, '');
+  }
+
+  /* ─── Gerar iniciais para o avatar ─── */
+  function iniciais(nome) {
+    return nome.trim().split(' ')
+      .slice(0, 2)
+      .map(p => p[0].toUpperCase())
+      .join('');
+  }
+
+  /* ─── Salvar novo cliente ─── */
+  function salvarCliente() {
+    const nome      = document.getElementById('nome').value.trim();
+    const telefone  = limparTelefone(document.getElementById('telefone').value.trim());
+    const descricao = document.getElementById('descricao').value.trim();
+
+    // Validações básicas
+    if (!nome) { showToast('⚠️ Informe o nome do cliente.', 'error'); return; }
+    if (!telefone) { showToast('⚠️ Informe o telefone do cliente.', 'error'); return; }
+
+    const clientes = carregarClientes();
+
+    // Verificar duplicidade de número
+    const jaExiste = clientes.some(c => c.telefone === telefone);
+    if (jaExiste) {
+      showToast('🚫 Número já cadastrado!', 'error');
+      return;
+    }
+
+    // Montar objeto do cliente
+    const novoCliente = {
+      id:         Date.now().toString(), // ID único baseado em timestamp
+      nome,
+      telefone,
+      descricao,
+      linkEnviado: false,              // Controle do link de avaliação
+      criadoEm:   new Date().toLocaleDateString('pt-BR')
+    };
+
+    clientes.unshift(novoCliente); // Adiciona no início da lista
+    salvarNoStorage(clientes);
+
+    // Limpar formulário
+    document.getElementById('nome').value = '';
+    document.getElementById('telefone').value = '';
+    document.getElementById('descricao').value = '';
+
+    showToast('✅ Cliente salvo com sucesso!', 'success');
+    renderLista();
+    atualizarStats();
+  }
+
+  /* ─── Alternar status do link de avaliação ─── */
+  function toggleLink(id) {
+    const clientes = carregarClientes();
+    const idx = clientes.findIndex(c => c.id === id);
+    if (idx === -1) return;
+
+    clientes[idx].linkEnviado = !clientes[idx].linkEnviado;
+    salvarNoStorage(clientes);
+
+    const msg = clientes[idx].linkEnviado
+      ? '⭐ Link marcado como enviado!'
+      : '↩️ Marcação removida.';
+    showToast(msg, 'success');
+
+    renderLista();
+    atualizarStats();
+  }
+
+  /* ─── Excluir cliente ─── */
+  function excluirCliente(id, nome) {
+    if (!confirm(`Excluir "${nome}"? Esta ação não pode ser desfeita.`)) return;
+
+    let clientes = carregarClientes();
+    clientes = clientes.filter(c => c.id !== id);
+    salvarNoStorage(clientes);
+
+    showToast(`🗑️ "${nome}" excluído.`, 'success');
+    renderLista();
+    atualizarStats();
+  }
+
+  /* ─── Atualizar contadores de estatísticas ─── */
+  function atualizarStats() {
+    const clientes = carregarClientes();
+    const total   = clientes.length;
+    const sent    = clientes.filter(c => c.linkEnviado).length;
+    const pending = total - sent;
+
+    document.getElementById('statTotal').textContent   = total;
+    document.getElementById('statSent').textContent    = sent;
+    document.getElementById('statPending').textContent = pending;
+  }
+
+  /* ─── Renderizar lista de clientes ─── */
+  function renderLista() {
+    const busca    = document.getElementById('busca').value.toLowerCase().trim();
+    const clientes = carregarClientes();
+
+    // Filtrar por busca
+    const filtrados = clientes.filter(c =>
+      c.nome.toLowerCase().includes(busca) ||
+      c.telefone.includes(busca)
+    );
+
+    const lista = document.getElementById('lista');
+    const badge = document.getElementById('countBadge');
+
+    badge.textContent = `${filtrados.length} cliente${filtrados.length !== 1 ? 's' : ''}`;
+
+    if (filtrados.length === 0) {
+      lista.innerHTML = `
+        <div class="empty-state">
+          <div class="icon">${clientes.length === 0 ? '📋' : '🔍'}</div>
+          <p>${clientes.length === 0
+            ? 'Nenhum cliente cadastrado ainda.<br>Adicione o primeiro acima!'
+            : 'Nenhum resultado encontrado para sua busca.'
+          }</p>
+        </div>`;
+      return;
+    }
+
+    /* Montar cards */
+    lista.innerHTML = filtrados.map(c => {
+      const telFormatado = formatarTelefone(c.telefone);
+      const waLink = `https://wa.me/55${c.telefone}`;
+
+      return `
+        <div class="client-card ${c.linkEnviado ? 'sent' : ''}" id="card-${c.id}">
+
+          <!-- Avatar com iniciais -->
+          <div class="avatar">${iniciais(c.nome)}</div>
+
+          <!-- Informações -->
+          <div class="client-info">
+            <div class="name">${escapeHtml(c.nome)}</div>
+            <div class="phone">${telFormatado}</div>
+            ${c.descricao ? `<div class="desc" title="${escapeHtml(c.descricao)}">📦 ${escapeHtml(c.descricao)}</div>` : ''}
+            ${c.linkEnviado ? '<span class="badge-sent">⭐ Link enviado</span>' : ''}
+          </div>
+
+          <!-- Ações -->
+          <div class="client-actions">
+
+            <!-- WhatsApp -->
+            <a href="${waLink}" target="_blank" rel="noopener" class="btn btn-sm btn-whats" title="Abrir no WhatsApp">
+              📲
+            </a>
+
+            <!-- Marcar link enviado -->
+            <button
+              class="btn btn-sm btn-link-sent ${c.linkEnviado ? 'active' : ''}"
+              onclick="toggleLink('${c.id}')"
+              title="${c.linkEnviado ? 'Desmarcar link enviado' : 'Marcar link como enviado'}"
+            >
+              ${c.linkEnviado ? '⭐ Enviado' : '⭐ Marcar'}
+            </button>
+
+            <!-- Excluir -->
+            <button
+              class="btn btn-sm btn-delete"
+              onclick="excluirCliente('${c.id}', '${escapeHtml(c.nome)}')"
+              title="Excluir cliente"
+            >
+              🗑️
+            </button>
+
+          </div>
+        </div>`;
+    }).join('');
+  }
+
+  /* ─── Formatar telefone para exibição ─── */
+  function formatarTelefone(tel) {
+    if (tel.length === 11) {
+      return `(${tel.slice(0,2)}) ${tel.slice(2,7)}-${tel.slice(7)}`;
+    } else if (tel.length === 10) {
+      return `(${tel.slice(0,2)}) ${tel.slice(2,6)}-${tel.slice(6)}`;
+    }
+    return tel;
+  }
+
+  /* ─── Escapar HTML para evitar XSS ─── */
+  function escapeHtml(str) {
+    return str
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;')
+      .replace(/'/g, '&#039;');
+  }
+
+  /* ─── Permitir salvar com Enter no formulário ─── */
+  document.addEventListener('keydown', e => {
+    if (e.key === 'Enter' && e.target.tagName !== 'TEXTAREA') {
+      salvarCliente();
+    }
+  });
+
+  /* ─── Inicializar app ─── */
+  renderLista();
+  atualizarStats();
+</script>
+</body>
+</html>
