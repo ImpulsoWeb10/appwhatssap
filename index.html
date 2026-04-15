@@ -1,19 +1,21 @@
 <script>
 const API_URL = "COLE_SUA_URL_AQUI";
 
-/* Toast */
+/* Toast seguro */
 function showToast(msg, tipo = 'success') {
   const t = document.getElementById('toast');
+  if (!t) return;
   t.textContent = msg;
   t.className = `show ${tipo}`;
   setTimeout(() => { t.className = ''; }, 3000);
 }
 
+/* Limpar telefone */
 function limparTelefone(tel) {
   return tel.replace(/\D/g, '');
 }
 
-/* SALVAR */
+/* SALVAR CLIENTE */
 async function salvarCliente() {
   try {
     const nome = document.getElementById('nome').value.trim();
@@ -28,7 +30,16 @@ async function salvarCliente() {
     const url = `${API_URL}?action=salvar&nome=${encodeURIComponent(nome)}&telefone=${telefone}&descricao=${encodeURIComponent(descricao)}`;
 
     const res = await fetch(url);
-    const data = await res.json();
+    const texto = await res.text();
+
+    let data;
+    try {
+      data = JSON.parse(texto);
+    } catch {
+      console.error("Resposta não é JSON:", texto);
+      showToast('Erro na API (não é JSON)', 'error');
+      return;
+    }
 
     if (data.error) {
       showToast(data.error, 'error');
@@ -49,24 +60,38 @@ async function salvarCliente() {
   }
 }
 
-/* LISTAR */
+/* CARREGAR CLIENTES */
 async function carregarClientes() {
   try {
     const res = await fetch(`${API_URL}?action=listar`);
-    const clientes = await res.json();
+    const texto = await res.text();
+
+    let clientes;
+    try {
+      clientes = JSON.parse(texto);
+    } catch {
+      console.error("Resposta inválida:", texto);
+      showToast('Erro ao carregar dados', 'error');
+      renderLista([]);
+      atualizarStats([]);
+      return;
+    }
 
     renderLista(clientes || []);
     atualizarStats(clientes || []);
 
   } catch (e) {
     console.error(e);
-    showToast('Erro ao carregar', 'error');
+    showToast('Erro de conexão', 'error');
+    renderLista([]);
+    atualizarStats([]);
   }
 }
 
-/* RENDER */
+/* RENDER LISTA */
 function renderLista(clientes) {
   const lista = document.getElementById('lista');
+  if (!lista) return;
 
   if (!clientes.length) {
     lista.innerHTML = '<div class="empty-state">Nenhum cliente</div>';
@@ -79,11 +104,13 @@ function renderLista(clientes) {
     return `
       <div class="client-card">
         <div class="avatar">${c.nome ? c.nome[0] : "?"}</div>
+
         <div class="client-info">
-          <div class="name">${c.nome}</div>
-          <div class="phone">${c.telefone}</div>
+          <div class="name">${c.nome || ''}</div>
+          <div class="phone">${c.telefone || ''}</div>
           <div class="desc">${c.descricao || ''}</div>
         </div>
+
         <div class="client-actions">
           <a href="${wa}" target="_blank" class="btn btn-sm btn-whats">📲</a>
         </div>
@@ -100,5 +127,7 @@ function atualizarStats(clientes) {
 }
 
 /* INIT */
-carregarClientes();
+window.onload = () => {
+  carregarClientes();
+};
 </script>
