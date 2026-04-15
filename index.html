@@ -1,137 +1,96 @@
 <script>
 const API_URL = "https://script.google.com/macros/s/AKfycbylwmrBqDfi4Yr-wYwu3xPjaAcARaBTGcflz4gP_3cbp_fYyqGU2kV8aM0jzf888XosyA/exec";
 
-/* Toast */
+/* Toast seguro */
 function showToast(msg, tipo = 'success') {
   const t = document.getElementById('toast');
-  if (!t) return;
+  if (!t) {
+    console.warn("Toast não encontrado:", msg);
+    return;
+  }
   t.textContent = msg;
   t.className = `show ${tipo}`;
   setTimeout(() => { t.className = ''; }, 3000);
 }
 
-/* Limpar telefone */
-function limparTelefone(tel) {
-  return tel.replace(/\D/g, '');
-}
-
-/* SALVAR CLIENTE */
+/* SALVAR */
 async function salvarCliente() {
   try {
-    const nome = document.getElementById('nome').value.trim();
-    const telefone = limparTelefone(document.getElementById('telefone').value);
-    const descricao = document.getElementById('descricao').value.trim();
+    const nome = document.getElementById('nome')?.value.trim();
+    const telefone = document.getElementById('telefone')?.value.replace(/\D/g,'');
+    const descricao = document.getElementById('descricao')?.value.trim();
 
     if (!nome || !telefone) {
       showToast('Preencha nome e telefone', 'error');
       return;
     }
 
-    const url = `${API_URL}?action=salvar&nome=${encodeURIComponent(nome)}&telefone=${telefone}&descricao=${encodeURIComponent(descricao)}`;
-
-    const res = await fetch(url);
-    const texto = await res.text();
-
-    let data;
-    try {
-      data = JSON.parse(texto);
-    } catch {
-      console.error("Resposta inválida:", texto);
-      showToast('Erro na API', 'error');
-      return;
-    }
+    const res = await fetch(`${API_URL}?action=salvar&nome=${encodeURIComponent(nome)}&telefone=${telefone}&descricao=${encodeURIComponent(descricao)}`);
+    const data = await res.json();
 
     if (data.error) {
       showToast(data.error, 'error');
       return;
     }
 
-    showToast('Cliente salvo!', 'success');
-
-    document.getElementById('nome').value = '';
-    document.getElementById('telefone').value = '';
-    document.getElementById('descricao').value = '';
-
+    showToast('Salvo!');
     carregarClientes();
 
   } catch (e) {
-    console.error(e);
+    console.error("Erro salvar:", e);
     showToast('Erro ao salvar', 'error');
   }
 }
 
-/* CARREGAR CLIENTES */
+/* CARREGAR */
 async function carregarClientes() {
   try {
     const res = await fetch(`${API_URL}?action=listar`);
-    const texto = await res.text();
+    const clientes = await res.json();
 
-    let clientes;
-    try {
-      clientes = JSON.parse(texto);
-    } catch {
-      console.error("Resposta inválida:", texto);
-      showToast('Erro ao carregar dados', 'error');
-      renderLista([]);
-      atualizarStats([]);
-      return;
-    }
+    console.log("Clientes:", clientes);
 
     renderLista(clientes || []);
     atualizarStats(clientes || []);
 
   } catch (e) {
-    console.error(e);
-    showToast('Erro de conexão', 'error');
-    renderLista([]);
-    atualizarStats([]);
+    console.error("Erro carregar:", e);
+    showToast('Erro ao carregar', 'error');
   }
 }
 
-/* RENDER LISTA */
+/* RENDER */
 function renderLista(clientes) {
   const lista = document.getElementById('lista');
 
-  if (!clientes.length) {
-    lista.innerHTML = '<div class="empty-state">Nenhum cliente</div>';
+  if (!lista) {
+    console.error("Elemento #lista não existe");
     return;
   }
 
-  lista.innerHTML = clientes.map(c => {
-    const msg = encodeURIComponent(`Olá ${c.nome}, poderia avaliar nosso serviço?`);
-    const wa = `https://wa.me/${c.telefone}?text=${msg}`;
+  if (!clientes.length) {
+    lista.innerHTML = '<p style="padding:20px">Nenhum cliente</p>';
+    return;
+  }
 
-    return `
-      <div class="client-card ${c.linkEnviado ? 'sent' : ''}">
-        <div class="avatar">${c.nome ? c.nome[0] : "?"}</div>
-
-        <div class="client-info">
-          <div class="name">${c.nome || ''}</div>
-          <div class="phone">${c.telefone || ''}</div>
-          <div class="desc">${c.descricao || ''}</div>
-          ${c.linkEnviado ? '<span class="badge-sent">⭐ Enviado</span>' : ''}
-        </div>
-
-        <div class="client-actions">
-          <a href="${wa}" target="_blank" class="btn btn-sm btn-whats">📲</a>
-        </div>
-      </div>
-    `;
-  }).join('');
+  lista.innerHTML = clientes.map(c => `
+    <div style="padding:10px;border:1px solid #ccc;margin-bottom:10px;">
+      <b>${c.nome}</b><br>
+      ${c.telefone}<br>
+      ${c.descricao || ''}
+    </div>
+  `).join('');
 }
 
 /* STATS */
 function atualizarStats(clientes) {
-  const total = clientes.length;
-  const enviados = clientes.filter(c => c.linkEnviado).length;
-
-  document.getElementById('statTotal').textContent = total;
-  document.getElementById('statSent').textContent = enviados;
-  document.getElementById('statPending').textContent = total - enviados;
+  const totalEl = document.getElementById('statTotal');
+  if (totalEl) totalEl.textContent = clientes.length;
 }
 
 /* INIT */
 window.onload = () => {
+  console.log("App iniciado");
   carregarClientes();
 };
 </script>
