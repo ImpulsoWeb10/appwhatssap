@@ -101,7 +101,7 @@ button {
 <div id="toast"></div>
 
 <script>
-const API_URL = "https://script.google.com/macros/s/AKfycbylwmrBqDfi4Yr-wYwu3xPjaAcARaBTGcflz4gP_3cbp_fYyqGU2kV8aM0jzf888XosyA/exec";
+const API_URL = "https://script.google.com/macros/s/AKfycbwPSmpusUrkztIp2_YLLbcJ3KGUUCJWTyRqoG860Tw6zqAADnn0793XGmMgzI0i2flohg/exec";
 
 /* TOAST */
 function showToast(msg){
@@ -117,7 +117,7 @@ function limparTelefone(t){
   return t.replace(/\D/g,'');
 }
 
-/* API UNIVERSAL */
+/* API */
 async function api(action,data={}){
   try{
     const res = await fetch(API_URL,{
@@ -142,9 +142,13 @@ async function api(action,data={}){
 
 /* SALVAR */
 async function salvarCliente(){
-  const nome = document.getElementById('nome').value.trim();
-  const telefone = limparTelefone(document.getElementById('telefone').value);
-  const descricao = document.getElementById('descricao').value.trim();
+  const nomeEl = document.getElementById('nome');
+  const telEl = document.getElementById('telefone');
+  const descEl = document.getElementById('descricao');
+
+  const nome = nomeEl.value.trim();
+  const telefone = limparTelefone(telEl.value);
+  const descricao = descEl.value.trim();
 
   if(!nome || !telefone){
     showToast("Preencha os campos");
@@ -165,9 +169,9 @@ async function salvarCliente(){
 
   showToast("Salvo!");
 
-  nome.value="";
-  telefone.value="";
-  descricao.value="";
+  nomeEl.value="";
+  telEl.value="";
+  descEl.value="";
 
   carregarClientes();
 }
@@ -181,7 +185,7 @@ async function carregarClientes(){
   const clientes = await api("listar");
 
   if(!clientes){
-    lista.innerHTML="⚠️ API bloqueada (401/CORS)<br>Corrija no Apps Script";
+    lista.innerHTML="Erro ao carregar";
     return;
   }
 
