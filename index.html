@@ -9,24 +9,25 @@ function showToast(msg, tipo = 'success') {
   setTimeout(() => { t.className = ''; }, 3000);
 }
 
-/* Limpar telefone */
 function limparTelefone(tel) {
   return tel.replace(/\D/g, '');
 }
 
-/* Salvar cliente no Google Sheets */
+/* SALVAR */
 async function salvarCliente() {
-  const nome = document.getElementById('nome').value.trim();
-  const telefone = limparTelefone(document.getElementById('telefone').value);
-  const descricao = document.getElementById('descricao').value.trim();
-
-  if (!nome || !telefone) {
-    showToast('Preencha nome e telefone', 'error');
-    return;
-  }
-
   try {
-    const res = await fetch(`${API_URL}?action=salvar&nome=${nome}&telefone=${telefone}&descricao=${descricao}`);
+    const nome = document.getElementById('nome').value.trim();
+    const telefone = limparTelefone(document.getElementById('telefone').value);
+    const descricao = document.getElementById('descricao').value.trim();
+
+    if (!nome || !telefone) {
+      showToast('Preencha nome e telefone', 'error');
+      return;
+    }
+
+    const url = `${API_URL}?action=salvar&nome=${encodeURIComponent(nome)}&telefone=${telefone}&descricao=${encodeURIComponent(descricao)}`;
+
+    const res = await fetch(url);
     const data = await res.json();
 
     if (data.error) {
@@ -43,82 +44,61 @@ async function salvarCliente() {
     carregarClientes();
 
   } catch (e) {
+    console.error(e);
     showToast('Erro ao salvar', 'error');
   }
 }
 
-/* Carregar clientes */
+/* LISTAR */
 async function carregarClientes() {
   try {
     const res = await fetch(`${API_URL}?action=listar`);
     const clientes = await res.json();
 
-    renderLista(clientes);
-    atualizarStats(clientes);
+    renderLista(clientes || []);
+    atualizarStats(clientes || []);
 
-  } catch {
-    showToast('Erro ao carregar dados', 'error');
+  } catch (e) {
+    console.error(e);
+    showToast('Erro ao carregar', 'error');
   }
 }
 
-/* Render lista */
+/* RENDER */
 function renderLista(clientes) {
   const lista = document.getElementById('lista');
-  const busca = document.getElementById('busca').value.toLowerCase();
 
-  const filtrados = clientes.filter(c =>
-    c.nome.toLowerCase().includes(busca) ||
-    c.telefone.includes(busca)
-  );
-
-  if (filtrados.length === 0) {
-    lista.innerHTML = `<div class="empty-state">Nenhum cliente</div>`;
+  if (!clientes.length) {
+    lista.innerHTML = '<div class="empty-state">Nenhum cliente</div>';
     return;
   }
 
-  lista.innerHTML = filtrados.map((c, i) => {
-    const msg = encodeURIComponent(`Olá ${c.nome}, poderia avaliar nosso serviço?`);
-    const wa = `https://wa.me/${c.telefone}?text=${msg}`;
+  lista.innerHTML = clientes.map(c => {
+    const wa = `https://wa.me/${c.telefone}?text=${encodeURIComponent("Olá, poderia avaliar nosso serviço?")}`;
 
     return `
-      <div class="client-card ${c.linkEnviado ? 'sent' : ''}">
-        <div class="avatar">${c.nome[0]}</div>
-
+      <div class="client-card">
+        <div class="avatar">${c.nome ? c.nome[0] : "?"}</div>
         <div class="client-info">
           <div class="name">${c.nome}</div>
           <div class="phone">${c.telefone}</div>
           <div class="desc">${c.descricao || ''}</div>
-          ${c.linkEnviado ? '<span class="badge-sent">Enviado</span>' : ''}
         </div>
-
         <div class="client-actions">
           <a href="${wa}" target="_blank" class="btn btn-sm btn-whats">📲</a>
-
-          <button class="btn btn-sm btn-link-sent"
-            onclick="marcarEnviado(${i})">
-            ⭐
-          </button>
         </div>
       </div>
     `;
   }).join('');
 }
 
-/* Atualizar stats */
+/* STATS */
 function atualizarStats(clientes) {
-  const total = clientes.length;
-  const enviados = clientes.filter(c => c.linkEnviado).length;
-
-  document.getElementById('statTotal').textContent = total;
-  document.getElementById('statSent').textContent = enviados;
-  document.getElementById('statPending').textContent = total - enviados;
+  document.getElementById('statTotal').textContent = clientes.length;
+  document.getElementById('statSent').textContent = clientes.filter(c => c.linkEnviado).length;
+  document.getElementById('statPending').textContent = clientes.length;
 }
 
-/* Marcar enviado (precisa do Apps Script preparado) */
-async function marcarEnviado(index) {
-  showToast('Função depende do backend (posso te montar)', 'error');
-}
-
-/* Inicializar */
+/* INIT */
 carregarClientes();
 </script>
