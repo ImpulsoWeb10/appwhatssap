@@ -1,85 +1,89 @@
 <script>
 const API_URL = "https://script.google.com/macros/s/AKfycbylwmrBqDfi4Yr-wYwu3xPjaAcARaBTGcflz4gP_3cbp_fYyqGU2kV8aM0jzf888XosyA/exec";
 
-/* Toast */
+/* ================= TOAST ================= */
 function showToast(msg, tipo = 'success') {
   const t = document.getElementById('toast');
   if (!t) return;
   t.textContent = msg;
   t.className = `show ${tipo}`;
-  setTimeout(() => { t.className = ''; }, 3000);
+  setTimeout(() => t.className = '', 3000);
 }
 
-/* Limpar telefone */
+/* ================= UTIL ================= */
 function limparTelefone(tel) {
   return tel.replace(/\D/g, '');
 }
 
-/* 🔥 FETCH PADRÃO (resolve CORS) */
-async function apiRequest(action, data = {}) {
+/* ================= API ================= */
+async function api(action, data = {}) {
   try {
-    const body = new URLSearchParams({ action, ...data });
-
     const res = await fetch(API_URL, {
       method: "POST",
-      body: body
+      body: new URLSearchParams({ action, ...data })
     });
 
-    const texto = await res.text();
+    const text = await res.text();
 
     try {
-      return JSON.parse(texto);
-    } catch {
-      console.error("Resposta inválida:", texto);
-      throw new Error("API não retornou JSON");
+      return JSON.parse(text);
+    } catch (e) {
+      console.error("Resposta inválida:", text);
+      showToast("Erro na API", "error");
+      return null;
     }
 
   } catch (e) {
-    console.error("Erro API:", e);
-    showToast('Erro de conexão', 'error');
+    console.error("Erro conexão:", e);
+    showToast("Erro de conexão", "error");
     return null;
   }
 }
 
-/* SALVAR CLIENTE */
+/* ================= SALVAR ================= */
 async function salvarCliente() {
-  const nome = document.getElementById('nome').value.trim();
-  const telefone = limparTelefone(document.getElementById('telefone').value);
-  const descricao = document.getElementById('descricao').value.trim();
+  const nome = document.getElementById('nome')?.value.trim();
+  const telefone = limparTelefone(document.getElementById('telefone')?.value);
+  const descricao = document.getElementById('descricao')?.value.trim();
 
   if (!nome || !telefone) {
-    showToast('Preencha nome e telefone', 'error');
+    showToast("Preencha nome e telefone", "error");
     return;
   }
 
-  const data = await apiRequest("salvar", {
-    nome,
-    telefone,
-    descricao
-  });
+  const res = await api("salvar", { nome, telefone, descricao });
 
-  if (!data) return;
+  if (!res) return;
 
-  if (data.error) {
-    showToast(data.error, 'error');
+  if (res.error) {
+    showToast(res.error, "error");
     return;
   }
 
-  showToast('Cliente salvo!', 'success');
+  showToast("Cliente salvo!");
 
-  document.getElementById('nome').value = '';
-  document.getElementById('telefone').value = '';
-  document.getElementById('descricao').value = '';
+  document.getElementById('nome').value = "";
+  document.getElementById('telefone').value = "";
+  document.getElementById('descricao').value = "";
 
   carregarClientes();
 }
 
-/* CARREGAR CLIENTES */
+/* ================= LISTAR ================= */
 async function carregarClientes() {
-  const clientes = await apiRequest("listar");
+  const listaEl = document.getElementById('lista');
 
-  if (!clientes) {
-    renderLista([]);
+  if (!listaEl) {
+    console.error("Elemento #lista não encontrado");
+    return;
+  }
+
+  listaEl.innerHTML = "<div style='padding:20px'>Carregando...</div>";
+
+  const clientes = await api("listar");
+
+  if (!clientes || !Array.isArray(clientes)) {
+    listaEl.innerHTML = "<div style='padding:20px'>Erro ao carregar</div>";
     atualizarStats([]);
     return;
   }
@@ -88,12 +92,13 @@ async function carregarClientes() {
   atualizarStats(clientes);
 }
 
-/* RENDER LISTA */
+/* ================= RENDER ================= */
 function renderLista(clientes) {
   const lista = document.getElementById('lista');
+  if (!lista) return;
 
-  if (!clientes.length) {
-    lista.innerHTML = '<div class="empty-state">Nenhum cliente</div>';
+  if (clientes.length === 0) {
+    lista.innerHTML = "<div style='padding:20px'>Nenhum cliente</div>";
     return;
   }
 
@@ -106,8 +111,8 @@ function renderLista(clientes) {
         <div class="avatar">${c.nome ? c.nome[0] : "?"}</div>
 
         <div class="client-info">
-          <div class="name">${c.nome}</div>
-          <div class="phone">${c.telefone}</div>
+          <div class="name">${c.nome || ''}</div>
+          <div class="phone">${c.telefone || ''}</div>
           <div class="desc">${c.descricao || ''}</div>
           ${c.linkEnviado ? '<span class="badge-sent">⭐ Enviado</span>' : ''}
         </div>
@@ -120,7 +125,7 @@ function renderLista(clientes) {
   }).join('');
 }
 
-/* STATS */
+/* ================= STATS ================= */
 function atualizarStats(clientes) {
   const total = clientes.length;
   const enviados = clientes.filter(c => c.linkEnviado).length;
@@ -130,8 +135,9 @@ function atualizarStats(clientes) {
   document.getElementById('statPending').textContent = total - enviados;
 }
 
-/* INIT */
+/* ================= INIT ================= */
 window.onload = () => {
+  console.log("App iniciado");
   carregarClientes();
 };
 </script>
