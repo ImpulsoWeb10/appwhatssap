@@ -1,7 +1,7 @@
 <script>
-const API_URL = "COLE_SUA_URL_AQUI";
+const API_URL = "https://script.google.com/macros/s/AKfycbylwmrBqDfi4Yr-wYwu3xPjaAcARaBTGcflz4gP_3cbp_fYyqGU2kV8aM0jzf888XosyA/exec";
 
-/* Toast seguro */
+/* Toast */
 function showToast(msg, tipo = 'success') {
   const t = document.getElementById('toast');
   if (!t) return;
@@ -36,8 +36,8 @@ async function salvarCliente() {
     try {
       data = JSON.parse(texto);
     } catch {
-      console.error("Resposta não é JSON:", texto);
-      showToast('Erro na API (não é JSON)', 'error');
+      console.error("Resposta inválida:", texto);
+      showToast('Erro na API', 'error');
       return;
     }
 
@@ -91,7 +91,6 @@ async function carregarClientes() {
 /* RENDER LISTA */
 function renderLista(clientes) {
   const lista = document.getElementById('lista');
-  if (!lista) return;
 
   if (!clientes.length) {
     lista.innerHTML = '<div class="empty-state">Nenhum cliente</div>';
@@ -99,16 +98,18 @@ function renderLista(clientes) {
   }
 
   lista.innerHTML = clientes.map(c => {
-    const wa = `https://wa.me/${c.telefone}?text=${encodeURIComponent("Olá, poderia avaliar nosso serviço?")}`;
+    const msg = encodeURIComponent(`Olá ${c.nome}, poderia avaliar nosso serviço?`);
+    const wa = `https://wa.me/${c.telefone}?text=${msg}`;
 
     return `
-      <div class="client-card">
+      <div class="client-card ${c.linkEnviado ? 'sent' : ''}">
         <div class="avatar">${c.nome ? c.nome[0] : "?"}</div>
 
         <div class="client-info">
           <div class="name">${c.nome || ''}</div>
           <div class="phone">${c.telefone || ''}</div>
           <div class="desc">${c.descricao || ''}</div>
+          ${c.linkEnviado ? '<span class="badge-sent">⭐ Enviado</span>' : ''}
         </div>
 
         <div class="client-actions">
@@ -121,9 +122,12 @@ function renderLista(clientes) {
 
 /* STATS */
 function atualizarStats(clientes) {
-  document.getElementById('statTotal').textContent = clientes.length;
-  document.getElementById('statSent').textContent = clientes.filter(c => c.linkEnviado).length;
-  document.getElementById('statPending').textContent = clientes.length;
+  const total = clientes.length;
+  const enviados = clientes.filter(c => c.linkEnviado).length;
+
+  document.getElementById('statTotal').textContent = total;
+  document.getElementById('statSent').textContent = enviados;
+  document.getElementById('statPending').textContent = total - enviados;
 }
 
 /* INIT */
