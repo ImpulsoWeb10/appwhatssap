@@ -5,13 +5,11 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>ClientesPro — Controle de Clientes</title>
 
-  <!-- Google Fonts: Sora (display) + DM Sans (body) -->
-<link rel="preconnect" href="https://fonts.googleapis.com" />
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-<link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700;800&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700;800&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet" />
 
   <style>
-    /* ── TOKENS ─────────────────────────────────────────── */
     :root {
       --bg:        #0d0f14;
       --surface:   #161a22;
@@ -21,13 +19,13 @@
       --accent2:   #2ea374;
       --warn:      #f97316;
       --danger:    #ef4444;
+      --gold:      #f59e0b;
       --text:      #e8eaf0;
       --muted:     #7a8398;
       --radius:    14px;
       --shadow:    0 4px 24px rgba(0,0,0,.45);
     }
 
-    /* ── RESET ──────────────────────────────────────────── */
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
     html { scroll-behavior: smooth; }
 
@@ -39,7 +37,6 @@
       padding: 0 0 60px;
     }
 
-    /* ── HEADER ─────────────────────────────────────────── */
     header {
       background: var(--surface);
       border-bottom: 1px solid var(--border);
@@ -70,18 +67,9 @@
       letter-spacing: -.02em;
     }
 
-    header p {
-      font-size: .78rem;
-      color: var(--muted);
-      margin-top: 1px;
-    }
+    header p { font-size: .78rem; color: var(--muted); margin-top: 1px; }
 
-    .header-right {
-      margin-left: auto;
-      display: flex;
-      align-items: center;
-      gap: 10px;
-    }
+    .header-right { margin-left: auto; display: flex; align-items: center; gap: 10px; }
 
     .badge-count {
       background: var(--card);
@@ -94,12 +82,7 @@
       border-radius: 999px;
     }
 
-    /* ── MAIN LAYOUT ────────────────────────────────────── */
-    main {
-      max-width: 960px;
-      margin: 0 auto;
-      padding: 32px 20px 0;
-    }
+    main { max-width: 960px; margin: 0 auto; padding: 32px 20px 0; }
 
     section-title {
       display: block;
@@ -112,7 +95,6 @@
       margin-bottom: 14px;
     }
 
-    /* ── FORM CARD ──────────────────────────────────────── */
     .form-card {
       background: var(--card);
       border: 1px solid var(--border);
@@ -133,12 +115,7 @@
       gap: 8px;
     }
 
-    .form-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 14px;
-    }
-
+    .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
     .form-grid .full { grid-column: 1 / -1; }
 
     label {
@@ -164,6 +141,7 @@
       transition: border-color .2s, box-shadow .2s;
     }
 
+    input[type="date"] { color-scheme: dark; }
     input::placeholder, textarea::placeholder { color: var(--muted); }
 
     input:focus, textarea:focus {
@@ -192,42 +170,14 @@
       gap: 8px;
     }
 
-    .btn-primary:hover {
-      background: var(--accent2);
-      box-shadow: 0 4px 20px rgba(62,207,142,.35);
-      transform: translateY(-1px);
-    }
-
+    .btn-primary:hover { background: var(--accent2); box-shadow: 0 4px 20px rgba(62,207,142,.35); transform: translateY(-1px); }
     .btn-primary:active { transform: translateY(0); }
     .btn-primary:disabled { opacity: .5; cursor: not-allowed; transform: none; }
 
-    /* ── SEARCH ─────────────────────────────────────────── */
-    .search-row {
-      display: flex;
-      gap: 12px;
-      margin-bottom: 20px;
-      align-items: center;
-    }
-
-    .search-wrap {
-      position: relative;
-      flex: 1;
-    }
-
-    .search-wrap svg {
-      position: absolute;
-      left: 13px;
-      top: 50%;
-      transform: translateY(-50%);
-      color: var(--muted);
-      pointer-events: none;
-    }
-
-    #busca {
-      padding-left: 40px;
-      background: var(--card);
-      border-color: var(--border);
-    }
+    .search-row { display: flex; gap: 12px; margin-bottom: 20px; align-items: center; }
+    .search-wrap { position: relative; flex: 1; }
+    .search-wrap svg { position: absolute; left: 13px; top: 50%; transform: translateY(-50%); color: var(--muted); pointer-events: none; }
+    #busca { padding-left: 40px; background: var(--card); border-color: var(--border); }
 
     .btn-refresh {
       background: var(--card);
@@ -245,7 +195,6 @@
 
     .btn-refresh:hover { border-color: var(--accent); color: var(--accent); }
 
-    /* ── CLIENT LIST ────────────────────────────────────── */
     #lista-clientes { display: flex; flex-direction: column; gap: 12px; }
 
     .cliente-card {
@@ -260,13 +209,27 @@
       animation: slideUp .3s ease both;
     }
 
-    .cliente-card:hover {
-      border-color: rgba(62,207,142,.35);
-      transform: translateY(-2px);
+    .cliente-card:hover { border-color: rgba(62,207,142,.35); transform: translateY(-2px); }
+    .cliente-card.link-enviado { border-left: 3px solid var(--accent); }
+
+    /* Aniversariante do dia */
+    .cliente-card.aniversario {
+      border-color: var(--gold);
+      background: linear-gradient(135deg, #1e2330, #2a2010);
+      box-shadow: 0 0 20px rgba(245,158,11,.2);
     }
 
-    .cliente-card.link-enviado {
-      border-left: 3px solid var(--accent);
+    .aniv-badge {
+      font-size: .72rem;
+      font-weight: 700;
+      letter-spacing: .07em;
+      text-transform: uppercase;
+      padding: 3px 10px;
+      border-radius: 999px;
+      background: rgba(245,158,11,.15);
+      color: var(--gold);
+      border: 1px solid rgba(245,158,11,.4);
+      flex-shrink: 0;
     }
 
     .avatar {
@@ -282,6 +245,12 @@
       flex-shrink: 0;
     }
 
+    .cliente-card.aniversario .avatar {
+      background: linear-gradient(135deg, #5c3a1f, #f59e0b22);
+      border-color: rgba(245,158,11,.4);
+      color: var(--gold);
+    }
+
     .cliente-info { flex: 1; min-width: 0; }
 
     .cliente-nome {
@@ -294,21 +263,9 @@
       text-overflow: ellipsis;
     }
 
-    .cliente-tel {
-      font-size: .83rem;
-      color: var(--muted);
-      margin-top: 2px;
-      font-variant-numeric: tabular-nums;
-    }
-
-    .cliente-desc {
-      font-size: .82rem;
-      color: var(--muted);
-      margin-top: 4px;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-    }
+    .cliente-tel { font-size: .83rem; color: var(--muted); margin-top: 2px; font-variant-numeric: tabular-nums; }
+    .cliente-desc { font-size: .82rem; color: var(--muted); margin-top: 4px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .cliente-aniv { font-size: .82rem; color: var(--gold); margin-top: 4px; }
 
     .status-badge {
       font-size: .72rem;
@@ -320,23 +277,10 @@
       flex-shrink: 0;
     }
 
-    .status-badge.enviado {
-      background: rgba(62,207,142,.15);
-      color: var(--accent);
-      border: 1px solid rgba(62,207,142,.3);
-    }
+    .status-badge.enviado { background: rgba(62,207,142,.15); color: var(--accent); border: 1px solid rgba(62,207,142,.3); }
+    .status-badge.pendente { background: rgba(249,115,22,.1); color: var(--warn); border: 1px solid rgba(249,115,22,.25); }
 
-    .status-badge.pendente {
-      background: rgba(249,115,22,.1);
-      color: var(--warn);
-      border: 1px solid rgba(249,115,22,.25);
-    }
-
-    .acoes {
-      display: flex;
-      gap: 8px;
-      flex-shrink: 0;
-    }
+    .acoes { display: flex; gap: 8px; flex-shrink: 0; }
 
     .btn-icon {
       width: 38px; height: 38px;
@@ -354,46 +298,15 @@
     .btn-icon.toggle:hover { border-color: var(--accent); background: rgba(62,207,142,.1); }
     .btn-icon.del:hover { border-color: var(--danger); background: rgba(239,68,68,.1); }
 
-    /* ── EMPTY STATE ────────────────────────────────────── */
-    .empty {
-      text-align: center;
-      padding: 60px 20px;
-      color: var(--muted);
-    }
-
+    .empty { text-align: center; padding: 60px 20px; color: var(--muted); }
     .empty .empty-icon { font-size: 3rem; margin-bottom: 14px; opacity: .4; }
     .empty p { font-size: .9rem; }
 
-    /* ── LOADING ────────────────────────────────────────── */
-    .loading {
-      text-align: center;
-      padding: 40px;
-      color: var(--muted);
-      font-size: .9rem;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 10px;
-    }
+    .loading { text-align: center; padding: 40px; color: var(--muted); font-size: .9rem; display: flex; align-items: center; justify-content: center; gap: 10px; }
 
-    .spinner {
-      width: 20px; height: 20px;
-      border: 2.5px solid var(--border);
-      border-top-color: var(--accent);
-      border-radius: 50%;
-      animation: spin .7s linear infinite;
-    }
+    .spinner { width: 20px; height: 20px; border: 2.5px solid var(--border); border-top-color: var(--accent); border-radius: 50%; animation: spin .7s linear infinite; }
 
-    /* ── TOAST ──────────────────────────────────────────── */
-    #toast-container {
-      position: fixed;
-      bottom: 24px;
-      right: 24px;
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
-      z-index: 9999;
-    }
+    #toast-container { position: fixed; bottom: 24px; right: 24px; display: flex; flex-direction: column; gap: 10px; z-index: 9999; }
 
     .toast {
       background: var(--card);
@@ -416,42 +329,135 @@
     .toast.erro .toast-icon { color: var(--danger); }
     .toast.info { border-color: rgba(99,160,255,.4); }
     .toast.info .toast-icon { color: #63a0ff; }
-
     .toast-icon { font-size: 1.1rem; flex-shrink: 0; }
     .toast.saindo { animation: toastOut .3s ease forwards; }
 
-    /* ── ANIMATIONS ─────────────────────────────────────── */
-    @keyframes slideDown {
-      from { opacity: 0; transform: translateY(-16px); }
-      to   { opacity: 1; transform: translateY(0); }
+    /* ── MODAL ANIVERSÁRIO ───────────────────────────────── */
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,.75);
+      backdrop-filter: blur(6px);
+      z-index: 9000;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      animation: fadeIn .3s ease both;
     }
 
-    @keyframes slideUp {
-      from { opacity: 0; transform: translateY(12px); }
-      to   { opacity: 1; transform: translateY(0); }
+    .modal-overlay.saindo { animation: fadeOut .3s ease forwards; }
+
+    .modal-box {
+      background: var(--card);
+      border: 1px solid rgba(245,158,11,.5);
+      border-radius: 20px;
+      padding: 36px 32px;
+      max-width: 480px;
+      width: 100%;
+      text-align: center;
+      box-shadow: 0 0 60px rgba(245,158,11,.25), var(--shadow);
+      animation: popIn .4s cubic-bezier(.34,1.56,.64,1) both;
     }
 
-    @keyframes toastIn {
-      from { opacity: 0; transform: translateX(24px); }
-      to   { opacity: 1; transform: translateX(0); }
+    .modal-emoji { font-size: 4rem; margin-bottom: 12px; animation: bounce 1s ease infinite; }
+
+    .modal-title {
+      font-family: 'Sora', sans-serif;
+      font-size: 1.5rem;
+      font-weight: 800;
+      color: var(--gold);
+      margin-bottom: 8px;
+      letter-spacing: -.02em;
     }
 
-    @keyframes toastOut {
-      to { opacity: 0; transform: translateX(24px); }
+    .modal-subtitle { font-size: .95rem; color: var(--muted); margin-bottom: 20px; }
+
+    .modal-nomes {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      margin-bottom: 28px;
     }
 
+    .modal-nome-item {
+      background: rgba(245,158,11,.1);
+      border: 1px solid rgba(245,158,11,.3);
+      border-radius: 12px;
+      padding: 12px 18px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .modal-nome-avatar {
+      width: 40px; height: 40px;
+      border-radius: 10px;
+      background: rgba(245,158,11,.2);
+      display: grid; place-items: center;
+      font-family: 'Sora', sans-serif;
+      font-weight: 800;
+      color: var(--gold);
+      flex-shrink: 0;
+    }
+
+    .modal-nome-info { text-align: left; }
+    .modal-nome-info strong { display: block; font-family: 'Sora', sans-serif; font-weight: 700; color: var(--text); }
+    .modal-nome-info span { font-size: .82rem; color: var(--muted); }
+
+    .modal-btn-wpp {
+      width: 100%;
+      background: #25d366;
+      color: #fff;
+      border: none;
+      border-radius: 10px;
+      font-family: 'Sora', sans-serif;
+      font-size: .9rem;
+      font-weight: 700;
+      padding: 12px 20px;
+      cursor: pointer;
+      margin-bottom: 10px;
+      transition: background .2s, transform .15s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+
+    .modal-btn-wpp:hover { background: #1fba58; transform: translateY(-1px); }
+
+    .modal-btn-fechar {
+      width: 100%;
+      background: transparent;
+      color: var(--muted);
+      border: 1.5px solid var(--border);
+      border-radius: 10px;
+      font-family: 'DM Sans', sans-serif;
+      font-size: .88rem;
+      font-weight: 600;
+      padding: 11px 20px;
+      cursor: pointer;
+      transition: border-color .2s, color .2s;
+    }
+
+    .modal-btn-fechar:hover { border-color: var(--muted); color: var(--text); }
+
+    @keyframes slideDown { from { opacity: 0; transform: translateY(-16px); } to { opacity: 1; transform: translateY(0); } }
+    @keyframes slideUp { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
+    @keyframes toastIn { from { opacity: 0; transform: translateX(24px); } to { opacity: 1; transform: translateX(0); } }
+    @keyframes toastOut { to { opacity: 0; transform: translateX(24px); } }
     @keyframes spin { to { transform: rotate(360deg); } }
+    @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+    @keyframes fadeOut { to { opacity: 0; } }
+    @keyframes popIn { from { opacity: 0; transform: scale(.85); } to { opacity: 1; transform: scale(1); } }
+    @keyframes bounce { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-10px); } }
 
-    /* ── RESPONSIVE ─────────────────────────────────────── */
     @media (max-width: 620px) {
       .form-grid { grid-template-columns: 1fr; }
       .form-grid .full { grid-column: 1; }
-
       .cliente-card { flex-wrap: wrap; }
       .acoes { width: 100%; justify-content: flex-end; }
-
       .search-row { flex-wrap: wrap; }
-
       header h1 { font-size: 1.1rem; }
     }
   </style>
@@ -470,6 +476,20 @@
     </div>
   </header>
 
+  <!-- ── MODAL ANIVERSÁRIO ──────────────────────────────── -->
+  <div id="modal-aniv" class="modal-overlay" style="display:none">
+    <div class="modal-box">
+      <div class="modal-emoji">🎂</div>
+      <div class="modal-title">Parabéns hoje!</div>
+      <div class="modal-subtitle" id="modal-subtitulo">Cliente(s) fazem aniversário hoje 🎉</div>
+      <div class="modal-nomes" id="modal-lista-nomes"></div>
+      <button class="modal-btn-wpp" id="modal-btn-wpp" onclick="enviarParabensWhatsApp()">
+        💬 Enviar parabéns pelo WhatsApp
+      </button>
+      <button class="modal-btn-fechar" onclick="fecharModal()">Fechar</button>
+    </div>
+  </div>
+
   <!-- ── MAIN ───────────────────────────────────────────── -->
   <main>
 
@@ -484,6 +504,13 @@
         <div>
           <label for="inp-tel">Telefone (WhatsApp)</label>
           <input id="inp-tel" type="tel" placeholder="Ex: 11999998888" maxlength="15" />
+        </div>
+        <div>
+          <label for="inp-aniv">Data de aniversário</label>
+          <input id="inp-aniv" type="date" />
+        </div>
+        <div>
+          <!-- espaço reservado — data de cadastro é automática -->
         </div>
         <div class="full">
           <label for="inp-desc">O que comprou / serviço</label>
@@ -514,18 +541,13 @@
 
   </main>
 
-  <!-- ── TOASTS ──────────────────────────────────────────── -->
   <div id="toast-container"></div>
 
-  <!-- ── SCRIPT ─────────────────────────────────────────── -->
   <script>
-    // ============================================================
-    // ⚙️  CONFIGURAÇÃO — cole a URL do seu Apps Script aqui
-    // ============================================================
     const API_URL = "https://script.google.com/macros/s/AKfycbyxmKZ57ZX5UH_O79NQpPl1vMMn9lRwdf9eSECCKRJgRcltO4v0es3Jfiw5C67_FVDr/exec";
-    // ============================================================
 
     let todosClientes = [];
+    let aniversariantesHoje = [];
 
     // ── Formatar telefone ────────────────────────────────────
     function formatarTelefone(tel) {
@@ -535,10 +557,7 @@
       return tel;
     }
 
-    // ── Inicial do nome ──────────────────────────────────────
-    function inicial(nome) {
-      return (nome || "?").trim().charAt(0).toUpperCase();
-    }
+    function inicial(nome) { return (nome || "?").trim().charAt(0).toUpperCase(); }
 
     // ── Toast ────────────────────────────────────────────────
     function toast(msg, tipo = "sucesso") {
@@ -553,7 +572,74 @@
       }, 3200);
     }
 
-    // ── Carregar clientes da API ─────────────────────────────
+    // ── Verificar se é aniversário hoje ─────────────────────
+    function ehAniversarioHoje(dataAniv) {
+      if (!dataAniv) return false;
+      const hoje = new Date();
+      const d = new Date(dataAniv + "T00:00:00");
+      return d.getDate() === hoje.getDate() && d.getMonth() === hoje.getMonth();
+    }
+
+    // ── Formatar data para exibição ──────────────────────────
+    function formatarData(data) {
+      if (!data) return "";
+      const d = new Date(data + "T00:00:00");
+      return d.toLocaleDateString("pt-BR", { day: "2-digit", month: "2-digit" });
+    }
+
+    // ── Modal aniversário ────────────────────────────────────
+    function mostrarModalAniversario(lista) {
+      aniversariantesHoje = lista;
+      const modal = document.getElementById("modal-aniv");
+      const subtitulo = document.getElementById("modal-subtitulo");
+      const listaNomes = document.getElementById("modal-lista-nomes");
+      const btnWpp = document.getElementById("modal-btn-wpp");
+
+      subtitulo.textContent = lista.length === 1
+        ? `${lista[0].nome} faz aniversário hoje! 🎉`
+        : `${lista.length} clientes fazem aniversário hoje! 🎉`;
+
+      listaNomes.innerHTML = lista.map(c => `
+        <div class="modal-nome-item">
+          <div class="modal-nome-avatar">${inicial(c.nome)}</div>
+          <div class="modal-nome-info">
+            <strong>${escapeHtml(c.nome)}</strong>
+            <span>📱 ${formatarTelefone(c.telefone)}</span>
+          </div>
+        </div>
+      `).join("");
+
+      // Botão WhatsApp: se for 1 cliente, abre direto; se forem vários, abre todos
+      if (lista.length === 1) {
+        btnWpp.style.display = "flex";
+      } else {
+        btnWpp.textContent = `💬 Enviar parabéns para todos (${lista.length})`;
+        btnWpp.style.display = "flex";
+      }
+
+      modal.style.display = "flex";
+    }
+
+    function fecharModal() {
+      const modal = document.getElementById("modal-aniv");
+      modal.classList.add("saindo");
+      setTimeout(() => {
+        modal.style.display = "none";
+        modal.classList.remove("saindo");
+      }, 300);
+    }
+
+    function enviarParabensWhatsApp() {
+      aniversariantesHoje.forEach(c => {
+        const n = String(c.telefone).replace(/\D/g, "");
+        const num = n.startsWith("55") ? n : `55${n}`;
+        const msg = encodeURIComponent(`🎂 Parabéns, ${c.nome}! Feliz aniversário! 🥳🎉`);
+        window.open(`https://wa.me/${num}?text=${msg}`, "_blank");
+      });
+      fecharModal();
+    }
+
+    // ── Carregar clientes ────────────────────────────────────
     async function carregarClientes() {
       const lista = document.getElementById("lista-clientes");
       lista.innerHTML = `<div class="loading"><div class="spinner"></div> Carregando clientes…</div>`;
@@ -561,12 +647,16 @@
       try {
         const res = await fetch(`${API_URL}?action=listar`);
         const data = await res.json();
-
         if (!data.sucesso) throw new Error(data.mensagem);
 
         todosClientes = data.clientes || [];
         renderizarClientes(todosClientes);
         atualizarBadge(todosClientes.length);
+
+        // Verificar aniversariantes
+        const anivHoje = todosClientes.filter(c => ehAniversarioHoje(c.aniversario));
+        if (anivHoje.length > 0) mostrarModalAniversario(anivHoje);
+
       } catch (err) {
         lista.innerHTML = `<div class="empty"><div class="empty-icon">⚠️</div><p>Erro ao carregar: ${err.message}<br><small>Verifique a URL da API.</small></p></div>`;
         toast("Erro ao carregar clientes.", "erro");
@@ -582,17 +672,22 @@
         return;
       }
 
-      lista.innerHTML = clientes.map((c, i) => `
-        <div class="cliente-card ${c.linkEnviado ? 'link-enviado' : ''}" id="card-${c.id}" style="animation-delay:${i * 40}ms">
+      lista.innerHTML = clientes.map((c, i) => {
+        const isAniv = ehAniversarioHoje(c.aniversario);
+        return `
+        <div class="cliente-card ${c.linkEnviado ? 'link-enviado' : ''} ${isAniv ? 'aniversario' : ''}" id="card-${c.id}" style="animation-delay:${i * 40}ms">
           <div class="avatar">${inicial(c.nome)}</div>
           <div class="cliente-info">
-            <div class="cliente-nome">${escapeHtml(c.nome)}</div>
+            <div class="cliente-nome">${isAniv ? '🎂 ' : ''}${escapeHtml(c.nome)}</div>
             <div class="cliente-tel">📱 ${formatarTelefone(c.telefone)}</div>
             ${c.descricao ? `<div class="cliente-desc">🛒 ${escapeHtml(c.descricao)}</div>` : ""}
+            ${c.aniversario ? `<div class="cliente-aniv">🎂 Aniversário: ${formatarData(c.aniversario)}</div>` : ""}
+            ${c.criadoEm ? `<div class="cliente-desc">📅 Cadastrado: ${c.criadoEm}</div>` : ""}
           </div>
+          ${isAniv ? `<span class="aniv-badge">🎉 Hoje!</span>` : `
           <span class="status-badge ${c.linkEnviado ? 'enviado' : 'pendente'}">
             ${c.linkEnviado ? "⭐ Enviado" : "⏳ Pendente"}
-          </span>
+          </span>`}
           <div class="acoes">
             <button class="btn-icon wpp" title="Abrir WhatsApp" onclick="abrirWhatsApp('${c.telefone}')">💬</button>
             <button class="btn-icon toggle" title="${c.linkEnviado ? 'Marcar como não enviado' : 'Marcar como enviado'}"
@@ -600,30 +695,28 @@
             <button class="btn-icon del" title="Excluir cliente" onclick="excluirCliente('${c.id}', '${escapeHtml(c.nome)}')">🗑️</button>
           </div>
         </div>
-      `).join("");
+      `}).join("");
     }
 
-    // ── Filtrar clientes (busca) ─────────────────────────────
     function filtrarClientes() {
       const q = document.getElementById("busca").value.toLowerCase();
       const filtrados = todosClientes.filter(c =>
-        c.nome.toLowerCase().includes(q) ||
-        String(c.telefone).includes(q)
+        c.nome.toLowerCase().includes(q) || String(c.telefone).includes(q)
       );
       renderizarClientes(filtrados);
     }
 
-    // ── Atualizar badge contador ─────────────────────────────
     function atualizarBadge(n) {
       document.getElementById("badge-count").textContent = `${n} cliente${n !== 1 ? "s" : ""}`;
     }
 
     // ── Salvar cliente ───────────────────────────────────────
     async function salvarCliente() {
-      const nome    = document.getElementById("inp-nome").value.trim();
-      const tel     = document.getElementById("inp-tel").value.trim().replace(/\D/g, "");
-      const desc    = document.getElementById("inp-desc").value.trim();
-      const btn     = document.getElementById("btn-salvar");
+      const nome  = document.getElementById("inp-nome").value.trim();
+      const tel   = document.getElementById("inp-tel").value.trim().replace(/\D/g, "");
+      const desc  = document.getElementById("inp-desc").value.trim();
+      const aniv  = document.getElementById("inp-aniv").value.trim();
+      const btn   = document.getElementById("btn-salvar");
 
       if (!nome || !tel) { toast("Preencha nome e telefone.", "erro"); return; }
       if (tel.length < 10) { toast("Telefone inválido (mínimo 10 dígitos).", "erro"); return; }
@@ -632,16 +725,16 @@
       btn.innerHTML = `<div class="spinner" style="border-top-color:#0d0f14;width:18px;height:18px"></div> Salvando…`;
 
       try {
-        const params = new URLSearchParams({ action: "salvar", nome, telefone: tel, descricao: desc });
+        const params = new URLSearchParams({ action: "salvar", nome, telefone: tel, descricao: desc, aniversario: aniv });
         const res = await fetch(`${API_URL}?${params}`);
         const data = await res.json();
-
         if (!data.sucesso) throw new Error(data.mensagem);
 
         toast(`✅ ${nome} cadastrado com sucesso!`, "sucesso");
         document.getElementById("inp-nome").value = "";
         document.getElementById("inp-tel").value  = "";
         document.getElementById("inp-desc").value = "";
+        document.getElementById("inp-aniv").value = "";
         await carregarClientes();
       } catch (err) {
         toast(err.message || "Erro ao salvar.", "erro");
@@ -654,15 +747,12 @@
     // ── Excluir cliente ──────────────────────────────────────
     async function excluirCliente(id, nome) {
       if (!confirm(`Excluir o cliente "${nome}"? Esta ação é irreversível.`)) return;
-
       const card = document.getElementById(`card-${id}`);
       if (card) card.style.opacity = "0.4";
-
       try {
         const res = await fetch(`${API_URL}?action=excluir&id=${encodeURIComponent(id)}`);
         const data = await res.json();
         if (!data.sucesso) throw new Error(data.mensagem);
-
         toast(`🗑️ ${nome} excluído.`, "info");
         await carregarClientes();
       } catch (err) {
@@ -678,32 +768,26 @@
         const res = await fetch(`${API_URL}?${params}`);
         const data = await res.json();
         if (!data.sucesso) throw new Error(data.mensagem);
-
-        const msg = novoStatus ? "⭐ Marcado como enviado!" : "↩️ Marcado como pendente.";
-        toast(msg, novoStatus ? "sucesso" : "info");
+        toast(novoStatus ? "⭐ Marcado como enviado!" : "↩️ Marcado como pendente.", novoStatus ? "sucesso" : "info");
         await carregarClientes();
       } catch (err) {
         toast(err.message || "Erro ao atualizar status.", "erro");
       }
     }
 
-    // ── Abrir WhatsApp ───────────────────────────────────────
     function abrirWhatsApp(tel) {
       const n = String(tel).replace(/\D/g, "");
       const num = n.startsWith("55") ? n : `55${n}`;
       window.open(`https://wa.me/${num}`, "_blank");
     }
 
-    // ── Escape HTML ──────────────────────────────────────────
     function escapeHtml(str) {
       return String(str || "")
-        .replace(/&/g, "&amp;")
-        .replace(/</g, "&lt;")
-        .replace(/>/g, "&gt;")
-        .replace(/"/g, "&quot;");
+        .replace(/&/g, "&amp;").replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;").replace(/"/g, "&quot;");
     }
 
-    // ── Máscara de telefone ──────────────────────────────────
+    // ── Máscara telefone ─────────────────────────────────────
     document.getElementById("inp-tel").addEventListener("input", function () {
       let v = this.value.replace(/\D/g, "").slice(0, 11);
       if (v.length > 10) v = v.replace(/^(\d{2})(\d{5})(\d{4})$/, "($1) $2-$3");
@@ -712,14 +796,17 @@
       this.value = v;
     });
 
-    // ── Enter no formulário ──────────────────────────────────
     ["inp-nome","inp-tel","inp-desc"].forEach(id => {
       document.getElementById(id).addEventListener("keydown", e => {
         if (e.key === "Enter" && !e.shiftKey) salvarCliente();
       });
     });
 
-    // ── Init ─────────────────────────────────────────────────
+    // Fechar modal clicando fora
+    document.getElementById("modal-aniv").addEventListener("click", function(e) {
+      if (e.target === this) fecharModal();
+    });
+
     window.addEventListener("DOMContentLoaded", carregarClientes);
   </script>
 </body>
