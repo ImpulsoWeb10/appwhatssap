@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aprendizado Musical Interativo</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f4f4f4;
+            color: #333;
+        }
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background-color: #fff;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+        h1, h2 {
+            color: #0056b3;
+            text-align: center;
+        }
+        .lesson-navigation {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .lesson-navigation button {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            margin: 0 5px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background-color 0.3s ease;
+        }
+        .lesson-navigation button:hover {
+            background-color: #0056b3;
+        }
+        .lesson-content {
+            border-top: 1px solid #eee;
+            padding-top: 20px;
+        }
+        .note-player {
+            text-align: center;
+            margin-top: 30px;
+            padding: 20px;
+            background-color: #e9ecef;
+            border-radius: 8px;
+        }
+        .note-player button {
+            background-color: #28a745;
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            margin: 5px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 18px;
+            transition: background-color 0.3s ease;
+        }
+        .note-player button:hover {
+            background-color: #218838;
+        }
+        .current-note {
+            font-size: 2em;
+            font-weight: bold;
+            margin-bottom: 15px;
+            color: #0056b3;
+        }
+        .lesson-section {
+            display: none; /* Esconde todas as lições por padrão */
+        }
+        .lesson-section.active {
+            display: block; /* Mostra a lição ativa */
+        }
+        audio {
+            display: none; /* Esconde o player de áudio padrão */
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Bem-vindo ao Aprendizado Musical!</h1>
+        <p>Explore escalas, acordes e ritmos de forma interativa.</p>
+
+        <div class="lesson-navigation">
+            <button id="prevLesson">Anterior</button>
+            <span id="currentLessonIndicator">Lição 1 de 20</span>
+            <button id="nextLesson">Próxima</button>
+        </div>
+
+        <div class="lesson-content">
+            <!-- Lição 1: Introdução às Notas e Escala Maior de C -->
+            <div id="lesson1" class="lesson-section active">
+                <h2>Lição 1: As Primeiras Notas e a Escala Maior de Dó</h2>
+                <p>Nesta lição, vamos aprender as notas básicas e a estrutura da escala maior de Dó (C). A escala maior é a base de muitas músicas e é essencial para entender a harmonia.</p>
+                <h3>Notas da Escala de Dó Maior:</h3>
+                <p>Dó (C) - Ré (D) - Mi (E) - Fá (F) - Sol (G) - Lá (A) - Si (B) - Dó (C)</p>
+                <p>Ouça cada nota:</p>
+                <div class="note-player">
+                    <div class="current-note" id="displayNote">Clique para tocar</div>
+                    <button onclick="playNote('C3')">Dó (C)</button>
+                    <button onclick="playNote('D3')">Ré (D)</button>
+                    <button onclick="playNote('E3')">Mi (E)</button>
+                    <button onclick="playNote('F3')">Fá (F)</button>
+                    <button onclick="playNote('G3')">Sol (G)</button>
+                    <button onclick="playNote('A3')">Lá (A)</button>
+                    <button onclick="playNote('B3')">Si (B)</button>
+                    <button onclick="playNote('C4')">Dó (C) Oitava</button>
+                </div>
+                <h3>Compasso 4/4:</h3>
+                <p>O compasso 4/4 é um dos mais comuns na música. Significa que há 4 tempos por compasso e a semínima (nota de 1 tempo) é a unidade de tempo. Conte "UM-dois-três-quatro" para sentir o ritmo.</p>
+                <p>Exemplo de exercício: Toque as notas da escala de Dó, uma por tempo, em um compasso 4/4.</p>
+            </div>
+
+            <!-- Lição 2: Acorde de Dó Maior e Ritmo Simples -->
+            <div id="lesson2" class="lesson-section">
+                <h2>Lição 2: Acorde de Dó Maior e Ritmo Simples</h2>
+                <p>Um acorde é um conjunto de três ou mais notas tocadas simultaneamente. O acorde de Dó Maior é formado pelas notas Dó (C), Mi (E) e Sol (G).</p>
+                <h3>Notas do Acorde de Dó Maior:</h3>
+                <p>Dó (C) - Mi (E) - Sol (G)</p>
+                <p>Ouça o acorde de Dó Maior:</p>
+                <div class="note-player">
+                    <button onclick="playChord('C_Major')">Tocar Acorde de Dó Maior</button>
+                </div>
+                <h3>Compasso 2/4:</h3>
+                <p>O compasso 2/4 tem 2 tempos por compasso. É um ritmo mais rápido e direto. Conte "UM-dois" para sentir o ritmo.</p>
+                <p>Exemplo de exercício: Toque o acorde de Dó Maior no primeiro tempo e uma nota Dó no segundo tempo, em um compasso 2/4.</p>
+            </div>
+
+            <!-- Adicione mais 18 lições aqui, seguindo o padrão -->
+            <!-- Exemplo de Lição 3 (apenas estrutura) -->
+            <div id="lesson3" class="lesson-section">
+                <h2>Lição 3: Escala Menor Natural de Lá</h2>
+                <p>Conteúdo da lição 3...</p>
+                <div class="note-player">
+                    <button onclick="playNote('A3')">Lá (A)</button>
+                    <!-- Mais botões de notas/acordes -->
+                </div>
+                <h3>Compasso 3/4:</h3>
+                <p>Conteúdo sobre compasso 3/4...</p>
+            </div>
+
+            <!-- ... (Lições 4 a 20) ... -->
+
+            <div id="lesson20" class="lesson-section">
+                <h2>Lição 20: Revisão e Desafios Finais</h2>
+                <p>Conteúdo da lição 20...</p>
+                <div class="note-player">
+                    <button onclick="playNote('C5')">Dó (C) Agudo</button>
+                    <button onclick="playChord('G_Major')">Sol Maior</button>
+                </div>
+                <h3>Compassos Mistos:</h3>
+                <p>Conteúdo sobre compassos mistos...</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Elementos de áudio (precisam ser preenchidos com os caminhos corretos) -->
+    <audio id="audioPlayer"></audio>
+    <audio id="C3" src="audio/C3.mp3"></audio>
+    <audio id="D3" src="audio/D3.mp3"></audio>
+    <audio id="E3" src="audio/E3.mp3"></audio>
+    <audio id="F3" src="audio/F3.mp3"></audio>
+    <audio id="G3" src="audio/G3.mp3"></audio>
+    <audio id="A3" src="audio/A3.mp3"></audio>
+    <audio id="B3" src="audio/B3.mp3"></audio>
+    <audio id="C4" src="audio/C4.mp3"></audio>
+    <audio id="C5" src="audio/C5.mp3"></audio>
+    <!-- Adicione mais tags <audio> para outras notas e acordes -->
+    <audio id="C_Major" src="audio/C_Major.mp3"></audio>
+    <audio id="G_Major" src="audio/G_Major.mp3"></audio>
+
+
+    <script>
+        const totalLessons = 20; // Atualize este número conforme você adiciona mais lições
+        let currentLessonIndex = 1;
+
+        function showLesson(index) {
+            // Esconde todas as lições
+            document.querySelectorAll('.lesson-section').forEach(lesson => {
+                lesson.classList.remove('active');
+            });
+            // Mostra a lição atual
+            const activeLesson = document.getElementById(`lesson${index}`);
+            if (activeLesson) {
+                activeLesson.classList.add('active');
+                document.getElementById('currentLessonIndicator').textContent = `Lição ${index} de ${totalLessons}`;
+                currentLessonIndex = index;
+            }
+            updateNavigationButtons();
+        }
+
+        function updateNavigationButtons() {
+            document.getElementById('prevLesson').disabled = currentLessonIndex === 1;
+            document.getElementById('nextLesson').disabled = currentLessonIndex === totalLessons;
+        }
+
+        document.getElementById('prevLesson').addEventListener('click', () => {
+            if (currentLessonIndex > 1) {
+                showLesson(currentLessonIndex - 1);
+            }
+        });
+
+        document.getElementById('nextLesson').addEventListener('click', () => {
+            if (currentLessonIndex < totalLessons) {
+                showLesson(currentLessonIndex + 1);
+            }
+        });
+
+        function playNote(noteId) {
+            const audio = document.getElementById(noteId);
+            const displayNote = document.getElementById('displayNote');
+            if (audio) {
+                audio.currentTime = 0; // Reinicia o áudio se já estiver tocando
+                audio.play();
+                displayNote.textContent = `Tocando: ${noteId.replace('3', '').replace('4', '').replace('5', '')}`; // Exibe a nota sem a oitava
+            } else {
+                displayNote.textContent = `Áudio para ${noteId} não encontrado.`;
+                console.warn(`Áudio para a nota ${noteId} não encontrado.`);
+            }
+        }
+
+        function playChord(chordId) {
+            const audio = document.getElementById(chordId);
+            const displayNote = document.getElementById('displayNote');
+            if (audio) {
+                audio.currentTime = 0;
+                audio.play();
+                displayNote.textContent = `Tocando: ${chordId.replace('_', ' ')}`;
+            } else {
+                displayNote.textContent = `Áudio para ${chordId} não encontrado.`;
+                console.warn(`Áudio para o acorde ${chordId} não encontrado.`);
+            }
+        }
+
+        // Inicializa a primeira lição ao carregar a página
+        document.addEventListener('DOMContentLoaded', () => {
+            showLesson(1);
+        });
+    </script>
+</body>
+</html>
