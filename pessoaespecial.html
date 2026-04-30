@@ -60,6 +60,36 @@
             margin-bottom: 15px;
         }
 
+        .options-button {
+            background-color: #8B4513;
+            color: #fff;
+            border: none;
+            padding: 12px 25px;
+            font-size: 1.1em;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            margin-top: 15px;
+            display: block; /* Para ocupar a largura total */
+            width: fit-content; /* Ajusta a largura ao conteúdo */
+            margin: 15px auto 0 auto; /* Centraliza o botão */
+        }
+
+        .options-button:hover {
+            background-color: #5C4033;
+        }
+
+        .options {
+            display: none; /* Escondido por padrão */
+            margin-top: 20px;
+            animation: fadeIn 0.5s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
         .options label {
             display: block;
             margin-bottom: 10px;
@@ -72,55 +102,45 @@
         }
 
         .options label:hover {
-            background-color: #f0f0f0;
+            background-color: #e0e0e0;
             border-color: #ccc;
         }
 
         .options input[type="radio"] {
             margin-right: 10px;
             accent-color: #8B4513;
+            display: none; /* Esconde o radio button nativo */
         }
 
-        .next-button {
-            background-color: #8B4513;
-            color: #fff;
-            border: none;
-            padding: 12px 25px;
-            font-size: 1.1em;
-            border-radius: 8px;
+        .options input[type="radio"] + span {
+            position: relative;
+            padding-left: 25px;
             cursor: pointer;
-            transition: background-color 0.3s ease;
-            margin-top: 15px;
         }
 
-        .next-button:hover {
-            background-color: #5C4033;
+        .options input[type="radio"] + span::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 18px;
+            height: 18px;
+            border: 2px solid #8B4513;
+            border-radius: 50%;
+            background-color: #fff;
         }
 
-        .quiz-navigation {
-            display: flex;
-            justify-content: space-between;
-            margin-top: 20px;
-        }
-
-        .quiz-navigation button {
+        .options input[type="radio"]:checked + span::after {
+            content: '';
+            position: absolute;
+            left: 5px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
             background-color: #8B4513;
-            color: #fff;
-            border: none;
-            padding: 10px 20px;
-            font-size: 1em;
-            border-radius: 8px;
-            cursor: pointer;
-            transition: background-color 0.3s ease;
-        }
-
-        .quiz-navigation button:hover {
-            background-color: #5C4033;
-        }
-
-        .quiz-navigation button:disabled {
-            background-color: #ccc;
-            cursor: not-allowed;
         }
 
         .final-message-section {
@@ -301,10 +321,7 @@
             <div id="quiz-questions">
                 <!-- Questions will be loaded here by JavaScript -->
             </div>
-            <div class="quiz-navigation">
-                <button id="prevBtn" disabled>Anterior</button>
-                <button id="nextBtn">Próxima</button>
-            </div>
+            <button class="options-button" id="showOptionsBtn">Opções de Resposta</button>
         </div>
 
         <div class="final-message-section" id="finalMessageSection">
@@ -332,8 +349,7 @@
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             const quizQuestionsDiv = document.getElementById('quiz-questions');
-            const prevBtn = document.getElementById('prevBtn');
-            const nextBtn = document.getElementById('nextBtn');
+            const showOptionsBtn = document.getElementById('showOptionsBtn');
             const finalMessageSection = document.getElementById('finalMessageSection');
             const resultBtn = document.getElementById('resultBtn');
             const modal = document.getElementById('myModal');
@@ -347,8 +363,7 @@
                         "A) 'Vinde a mim, todos os que estais cansados e oprimidos, e eu vos aliviarei.' (Mateus 11:28)",
                         "B) 'Tudo posso naquele que me fortalece.' (Filipenses 4:13)",
                         "C) 'O Senhor é o meu pastor; nada me faltará.' (Salmos 23:1)"
-                    ],
-                    answer: "A"
+                    ]
                 },
                 {
                     question: "Em momentos de incerteza e medo, qual a melhor forma de encontrar segurança?",
@@ -356,8 +371,7 @@
                         "A) 'Não temas, porque eu sou contigo; não te assombres, porque eu sou o teu Deus; eu te fortaleço, e te ajudo, e te sustento com a destra da minha justiça.' (Isaías 41:10)",
                         "B) 'O amor lança fora todo o medo.' (1 João 4:18)",
                         "C) 'Entrega o teu caminho ao Senhor; confia nele, e ele tudo fará.' (Salmos 37:5)"
-                    ],
-                    answer: "A"
+                    ]
                 },
                 {
                     question: "Quando a solidão parece grande, o que a Bíblia nos ensina sobre a presença de Deus?",
@@ -365,8 +379,7 @@
                         "A) 'Eis que estou convosco todos os dias, até a consumação dos séculos.' (Mateus 28:20)",
                         "B) 'O Senhor é o meu pastor; nada me faltará.' (Salmos 23:1)",
                         "C) 'Deus é o nosso refúgio e fortaleza, socorro bem presente na angústia.' (Salmos 46:1)"
-                    ],
-                    answer: "A"
+                    ]
                 },
                 {
                     question: "Quem Deus usa para nos dar apoio e carinho quando precisamos de um ombro amigo?",
@@ -374,8 +387,7 @@
                         "A) Anjos enviados diretamente do céu.",
                         "B) Amigos e familiares que Ele coloca em nosso caminho.",
                         "C) Apenas a nossa própria força interior."
-                    ],
-                    answer: "B"
+                    ]
                 },
                 {
                     question: "Qual a importância de ter pessoas ao nosso lado nos momentos difíceis?",
@@ -383,8 +395,7 @@
                         "A) É bom, mas não essencial, pois Deus é suficiente.",
                         "B) 'Melhor é serem dois do que um, porque têm melhor paga do seu trabalho.' (Eclesiastes 4:9)",
                         "C) Pessoas podem nos desviar do caminho de Deus."
-                    ],
-                    answer: "B"
+                    ]
                 },
                 {
                     question: "Quando a fé é testada, qual a promessa de Deus para quem persevera?",
@@ -392,8 +403,7 @@
                         "A) 'Bem-aventurado o homem que suporta a tentação; porque, quando for provado, receberá a coroa da vida.' (Tiago 1:12)",
                         "B) 'Aquele que começou a boa obra em vós a aperfeiçoará.' (Filipenses 1:6)",
                         "C) 'Sede fortes e corajosos. Não vos atemorizeis, nem vos espanteis.' (Josué 1:9)"
-                    ],
-                    answer: "A"
+                    ]
                 },
                 {
                     question: "O que significa 'lançar sobre Ele toda a vossa ansiedade'?",
@@ -401,8 +411,7 @@
                         "A) Ignorar os problemas e esperar que sumam.",
                         "B) Entregar a Deus nossas preocupações, confiando que Ele cuida de nós. (1 Pedro 5:7)",
                         "C) Ficar passivo e não fazer nada para resolver a situação."
-                    ],
-                    answer: "B"
+                    ]
                 },
                 {
                     question: "Como podemos saber que não estamos sozinhas em nossas lutas?",
@@ -410,8 +419,7 @@
                         "A) Pela ausência de problemas.",
                         "B) Pela presença constante de Deus e o apoio de nossa família e amigos.",
                         "C) Apenas quando tudo está dando certo."
-                    ],
-                    answer: "B"
+                    ]
                 },
                 {
                     question: "Qual a atitude de Deus em relação aos que têm o coração quebrantado?",
@@ -419,8 +427,7 @@
                         "A) Ele se afasta para nos dar espaço.",
                         "B) 'O Senhor está perto dos que têm o coração quebrantado e salva os de espírito oprimido.' (Salmos 34:18)",
                         "C) Ele espera que nos recuperemos sozinhas."
-                    ],
-                    answer: "B"
+                    ]
                 },
                 {
                     question: "Qual a maior prova do amor de Deus por nós?",
@@ -428,72 +435,55 @@
                         "A) As bênçãos materiais que recebemos.",
                         "B) 'Porque Deus tanto amou o mundo que deu o seu Filho Unigênito, para que todo o que nele crer não pereça, mas tenha a vida eterna.' (João 3:16)",
                         "C) A ausência de dificuldades em nossa vida."
-                    ],
-                    answer: "B"
+                    ]
                 }
             ];
 
             function loadQuestion(index) {
-                quizQuestionsDiv.innerHTML = ''; // Clear previous question
+                quizQuestionsDiv.innerHTML = ''; // Limpa a pergunta anterior
                 const q = questions[index];
                 const questionCard = document.createElement('div');
                 questionCard.classList.add('question-card');
                 questionCard.innerHTML = `
                     <h3>${index + 1}. ${q.question}</h3>
-                    <div class="options">
+                    <div class="options" id="optionsContainer">
                         ${q.options.map((option, i) => `
                             <label>
                                 <input type="radio" name="question${index}" value="${String.fromCharCode(65 + i)}">
-                                ${option}
+                                <span>${option}</span>
                             </label>
                         `).join('')}
                     </div>
                 `;
                 quizQuestionsDiv.appendChild(questionCard);
 
-                // Restore selected answer if exists
-                const savedAnswer = localStorage.getItem(`answer_q${index}`);
-                if (savedAnswer) {
-                    const radio = document.querySelector(`input[name="question${index}"][value="${savedAnswer}"]`);
-                    if (radio) radio.checked = true;
-                }
+                const optionsContainer = document.getElementById('optionsContainer');
+                optionsContainer.style.display = 'none'; // Esconde as opções inicialmente
+                showOptionsBtn.style.display = 'block'; // Mostra o botão "Opções de Resposta"
 
-                updateNavigationButtons();
+                // Adiciona evento de clique para cada opção
+                const radioButtons = optionsContainer.querySelectorAll('input[type="radio"]');
+                radioButtons.forEach(radio => {
+                    radio.addEventListener('change', function() {
+                        // Quando uma opção é selecionada, avança para a próxima pergunta
+                        setTimeout(() => { // Pequeno delay para a seleção ser visível
+                            if (currentQuestionIndex < questions.length - 1) {
+                                currentQuestionIndex++;
+                                loadQuestion(currentQuestionIndex);
+                            } else {
+                                // Se for a última pergunta, esconde o botão de opções e mostra o botão de resultado
+                                showOptionsBtn.style.display = 'none';
+                                finalMessageSection.style.display = 'block';
+                            }
+                        }, 300);
+                    });
+                });
             }
 
-            function updateNavigationButtons() {
-                prevBtn.disabled = currentQuestionIndex === 0;
-                nextBtn.disabled = false; // Always enable next, will be handled by final section
-                if (currentQuestionIndex === questions.length - 1) {
-                    nextBtn.style.display = 'none';
-                    finalMessageSection.style.display = 'block';
-                } else {
-                    nextBtn.style.display = 'block';
-                    finalMessageSection.style.display = 'none';
-                }
-            }
-
-            function saveAnswer() {
-                const selectedOption = document.querySelector(`input[name="question${currentQuestionIndex}"]:checked`);
-                if (selectedOption) {
-                    localStorage.setItem(`answer_q${currentQuestionIndex}`, selectedOption.value);
-                }
-            }
-
-            prevBtn.addEventListener('click', function() {
-                saveAnswer();
-                if (currentQuestionIndex > 0) {
-                    currentQuestionIndex--;
-                    loadQuestion(currentQuestionIndex);
-                }
-            });
-
-            nextBtn.addEventListener('click', function() {
-                saveAnswer();
-                if (currentQuestionIndex < questions.length - 1) {
-                    currentQuestionIndex++;
-                    loadQuestion(currentQuestionIndex);
-                }
+            showOptionsBtn.addEventListener('click', function() {
+                const optionsContainer = document.getElementById('optionsContainer');
+                optionsContainer.style.display = 'block'; // Mostra as opções
+                showOptionsBtn.style.display = 'none'; // Esconde o botão "Opções de Resposta"
             });
 
             resultBtn.addEventListener('click', function() {
