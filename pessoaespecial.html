@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Para uma Pessoa Muito Especial</title>
+    <title>Quiz Bíblico Especial</title>
     <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@700&family=Open+Sans:wght@400;700&display=swap" rel="stylesheet">
     <style>
         body {
@@ -40,57 +40,97 @@
             text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
         }
 
-        .accordion-item {
-            margin-bottom: 15px;
-            border: 1px solid #ddd;
-            border-radius: 8px;
-            overflow: hidden;
+        .quiz-section {
+            margin-top: 20px;
         }
 
-        .accordion-header {
-            background-color: #f0f0f0;
-            padding: 15px 20px;
-            cursor: pointer;
-            font-weight: bold;
+        .question-card {
+            background-color: #f9f9f9;
+            border: 1px solid #ddd;
+            border-radius: 10px;
+            padding: 25px;
+            margin-bottom: 20px;
             text-align: left;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+        }
+
+        .question-card h3 {
+            color: #5C4033;
+            font-size: 1.4em;
+            margin-bottom: 15px;
+        }
+
+        .options label {
+            display: block;
+            margin-bottom: 10px;
+            cursor: pointer;
+            font-size: 1.1em;
+            padding: 10px;
+            border: 1px solid #eee;
+            border-radius: 5px;
+            transition: background-color 0.3s ease, border-color 0.3s ease;
+        }
+
+        .options label:hover {
+            background-color: #f0f0f0;
+            border-color: #ccc;
+        }
+
+        .options input[type="radio"] {
+            margin-right: 10px;
+            accent-color: #8B4513;
+        }
+
+        .next-button {
+            background-color: #8B4513;
+            color: #fff;
+            border: none;
+            padding: 12px 25px;
+            font-size: 1.1em;
+            border-radius: 8px;
+            cursor: pointer;
             transition: background-color 0.3s ease;
+            margin-top: 15px;
+        }
+
+        .next-button:hover {
+            background-color: #5C4033;
+        }
+
+        .quiz-navigation {
             display: flex;
             justify-content: space-between;
-            align-items: center;
+            margin-top: 20px;
         }
 
-        .accordion-header:hover {
-            background-color: #e0e0e0;
+        .quiz-navigation button {
+            background-color: #8B4513;
+            color: #fff;
+            border: none;
+            padding: 10px 20px;
+            font-size: 1em;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
         }
 
-        .accordion-header::after {
-            content: '+';
-            font-size: 1.2em;
-            transition: transform 0.3s ease;
+        .quiz-navigation button:hover {
+            background-color: #5C4033;
         }
 
-        .accordion-header.active::after {
-            content: '-';
-            transform: rotate(180deg);
+        .quiz-navigation button:disabled {
+            background-color: #ccc;
+            cursor: not-allowed;
         }
 
-        .accordion-content {
-            padding: 15px 20px;
-            background-color: #f9f9f9;
-            text-align: left;
-            display: none;
-            border-top: 1px solid #eee;
-            font-style: italic;
-            color: #555;
-        }
-
-        .surprise-section {
+        .final-message-section {
             margin-top: 30px;
             padding-top: 20px;
             border-top: 1px dashed #ccc;
+            display: none; /* Hidden by default */
         }
 
-        .surprise-button {
+        .result-button {
             background-color: #FFD700; /* Dourado */
             color: #8B4513; /* Marrom */
             border: none;
@@ -107,12 +147,12 @@
             margin-top: 20px;
         }
 
-        .surprise-button:hover {
+        .result-button:hover {
             transform: translateY(-3px);
             box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
         }
 
-        .surprise-button::before {
+        .result-button::before {
             content: '';
             position: absolute;
             top: 0;
@@ -123,7 +163,7 @@
             transition: all 0.8s;
         }
 
-        .surprise-button:hover::before {
+        .result-button:hover::before {
             left: 100%;
         }
 
@@ -133,7 +173,7 @@
             100% { transform: scale(1); }
         }
 
-        .surprise-button.pulsing {
+        .result-button.pulsing {
             animation: pulse 1.5s infinite;
         }
 
@@ -210,6 +250,23 @@
             text-decoration: none;
         }
 
+        .modal-image {
+            width: 150px; /* Ajuste o tamanho conforme necessário */
+            height: 150px; /* Ajuste o tamanho conforme necessário */
+            border-radius: 50%; /* Para deixá-la redonda */
+            object-fit: cover;
+            margin-top: 20px;
+            border: 5px solid #FFD700; /* Borda dourada */
+            box-shadow: 0 0 15px rgba(0,0,0,0.3);
+            animation: pulse-image 2s infinite; /* Animação de pulso para a imagem */
+        }
+
+        @keyframes pulse-image {
+            0% { transform: scale(1); box-shadow: 0 0 15px rgba(0,0,0,0.3); }
+            50% { transform: scale(1.05); box-shadow: 0 0 25px rgba(255,215,0,0.7); }
+            100% { transform: scale(1); box-shadow: 0 0 15px rgba(0,0,0,0.3); }
+        }
+
         /* Confetti styles */
         .confetti {
             position: absolute;
@@ -237,55 +294,22 @@
 </head>
 <body>
     <div class="container">
-        <h1>Para uma Mulher de Fé e Força!</h1>
-        <p>Sabemos que a vida nos apresenta desafios, mas a Palavra de Deus é um refúgio seguro. Clique nas perguntas e encontre conforto e esperança.</p>
+        <h1>Quiz Bíblico: Você está bem na leitura?</h1>
+        <p>Este quiz é um lembrete de que, nos momentos difíceis, Deus e as pessoas que Ele coloca em nossas vidas são nossas maiores fontes de conforto e apoio.</p>
 
-        <div class="accordion">
-            <div class="accordion-item">
-                <div class="accordion-header">Quando a tristeza aperta o coração?</div>
-                <div class="accordion-content">"O Senhor está perto dos que têm o coração quebrantado e salva os de espírito oprimido." - Salmos 34:18</div>
+        <div class="quiz-section">
+            <div id="quiz-questions">
+                <!-- Questions will be loaded here by JavaScript -->
             </div>
-            <div class="accordion-item">
-                <div class="accordion-header">Quando a preocupação tenta roubar a paz?</div>
-                <div class="accordion-content">"Não andem ansiosos por coisa alguma, mas em tudo, pela oração e súplicas, e com ação de graças, apresentem seus pedidos a Deus. E a paz de Deus, que excede todo o entendimento, guardará os seus corações e as suas mentes em Cristo Jesus." - Filipenses 4:6-7</div>
-            </div>
-            <div class="accordion-item">
-                <div class="accordion-header">Quando a solidão parece grande demais?</div>
-                <div class="accordion-content">"O Senhor é o meu pastor; nada me faltará." - Salmos 23:1</div>
-            </div>
-            <div class="accordion-item">
-                <div class="accordion-header">Quando as forças parecem se esgotar?</div>
-                <div class="accordion-content">"Mas aqueles que esperam no Senhor renovam as suas forças. Voam alto como águias; correm e não ficam exaustos, andam e não se cansam." - Isaías 40:31</div>
-            </div>
-            <div class="accordion-item">
-                <div class="accordion-header">Quando a fé é testada pelas dificuldades?</div>
-                <div class="accordion-content">"Considerem motivo de grande alegria o fato de passarem por diversas provações, pois vocês sabem que a prova da sua fé produz perseverança." - Tiago 1:2-3</div>
-            </div>
-            <div class="accordion-item">
-                <div class="accordion-header">Quando o medo tenta dominar?</div>
-                <div class="accordion-content">"Não temas, porque eu sou contigo; não te assombres, porque eu sou o teu Deus; eu te fortaleço, e te ajudo, e te sustento com a destra da minha justiça." - Isaías 41:10</div>
-            </div>
-            <div class="accordion-item">
-                <div class="accordion-header">Quando a esperança parece distante?</div>
-                <div class="accordion-content">"Porque sou eu que conheço os planos que tenho para vocês, diz o Senhor, planos de fazê-los prosperar e não de lhes causar dano, planos de dar-lhes esperança e um futuro." - Jeremias 29:11</div>
-            </div>
-            <div class="accordion-item">
-                <div class="accordion-header">Quando você se sente sobrecarregada?</div>
-                <div class="accordion-content">"Venham a mim, todos os que estão cansados e sobrecarregados, e eu lhes darei descanso." - Mateus 11:28</div>
-            </div>
-            <div class="accordion-item">
-                <div class="accordion-header">Quando a incerteza bate à porta?</div>
-                <div class="accordion-content">"Confie no Senhor de todo o seu coração e não se apoie em seu próprio entendimento; reconheça o Senhor em todos os seus caminhos, e ele endireitará as suas veredas." - Provérbios 3:5-6</div>
-            </div>
-            <div class="accordion-item">
-                <div class="accordion-header">Quando você precisa de um lembrete do amor de Deus?</div>
-                <div class="accordion-content">"Porque Deus tanto amou o mundo que deu o seu Filho Unigênito, para que todo o que nele crer não pereça, mas tenha a vida eterna." - João 3:16</div>
+            <div class="quiz-navigation">
+                <button id="prevBtn" disabled>Anterior</button>
+                <button id="nextBtn">Próxima</button>
             </div>
         </div>
 
-        <div class="surprise-section">
-            <p>Clique aqui e tenha uma doce surpresa!</p>
-            <button class="surprise-button pulsing" id="surpriseBtn">Revelar Surpresa</button>
+        <div class="final-message-section" id="finalMessageSection">
+            <p>Parabéns por chegar até aqui!</p>
+            <button class="result-button pulsing" id="resultBtn">Resultado</button>
         </div>
     </div>
 
@@ -300,33 +324,183 @@
                 Deus está com você e nós, sua família, estamos juntamente. <br>
                 Você é muito especial e sentimos de te abençoar com uma surpresa na sua conta do banco!
             </p>
+            <!-- Substitua 'sua_foto.png' pelo caminho da sua imagem -->
+            <img src="sua_foto.png" alt="Pessoa Especial" class="modal-image">
         </div>
     </div>
 
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            const accordionHeaders = document.querySelectorAll('.accordion-header');
-            accordionHeaders.forEach(header => {
-                header.addEventListener('click', function() {
-                    this.classList.toggle('active');
-                    const content = this.nextElementSibling;
-                    if (content.style.display === 'block') {
-                        content.style.display = 'none';
-                    } else {
-                        content.style.display = 'block';
-                    }
-                });
-            });
-
-            const surpriseBtn = document.getElementById('surpriseBtn');
+            const quizQuestionsDiv = document.getElementById('quiz-questions');
+            const prevBtn = document.getElementById('prevBtn');
+            const nextBtn = document.getElementById('nextBtn');
+            const finalMessageSection = document.getElementById('finalMessageSection');
+            const resultBtn = document.getElementById('resultBtn');
             const modal = document.getElementById('myModal');
             const closeButton = document.querySelector('.close-button');
 
-            surpriseBtn.addEventListener('click', function() {
-                modal.style.display = 'flex'; // Make it visible
+            let currentQuestionIndex = 0;
+            const questions = [
+                {
+                    question: "Quando você se sente sobrecarregada e cansada, qual versículo te lembra que não precisa carregar tudo sozinha?",
+                    options: [
+                        "A) 'Vinde a mim, todos os que estais cansados e oprimidos, e eu vos aliviarei.' (Mateus 11:28)",
+                        "B) 'Tudo posso naquele que me fortalece.' (Filipenses 4:13)",
+                        "C) 'O Senhor é o meu pastor; nada me faltará.' (Salmos 23:1)"
+                    ],
+                    answer: "A"
+                },
+                {
+                    question: "Em momentos de incerteza e medo, qual a melhor forma de encontrar segurança?",
+                    options: [
+                        "A) 'Não temas, porque eu sou contigo; não te assombres, porque eu sou o teu Deus; eu te fortaleço, e te ajudo, e te sustento com a destra da minha justiça.' (Isaías 41:10)",
+                        "B) 'O amor lança fora todo o medo.' (1 João 4:18)",
+                        "C) 'Entrega o teu caminho ao Senhor; confia nele, e ele tudo fará.' (Salmos 37:5)"
+                    ],
+                    answer: "A"
+                },
+                {
+                    question: "Quando a solidão parece grande, o que a Bíblia nos ensina sobre a presença de Deus?",
+                    options: [
+                        "A) 'Eis que estou convosco todos os dias, até a consumação dos séculos.' (Mateus 28:20)",
+                        "B) 'O Senhor é o meu pastor; nada me faltará.' (Salmos 23:1)",
+                        "C) 'Deus é o nosso refúgio e fortaleza, socorro bem presente na angústia.' (Salmos 46:1)"
+                    ],
+                    answer: "A"
+                },
+                {
+                    question: "Quem Deus usa para nos dar apoio e carinho quando precisamos de um ombro amigo?",
+                    options: [
+                        "A) Anjos enviados diretamente do céu.",
+                        "B) Amigos e familiares que Ele coloca em nosso caminho.",
+                        "C) Apenas a nossa própria força interior."
+                    ],
+                    answer: "B"
+                },
+                {
+                    question: "Qual a importância de ter pessoas ao nosso lado nos momentos difíceis?",
+                    options: [
+                        "A) É bom, mas não essencial, pois Deus é suficiente.",
+                        "B) 'Melhor é serem dois do que um, porque têm melhor paga do seu trabalho.' (Eclesiastes 4:9)",
+                        "C) Pessoas podem nos desviar do caminho de Deus."
+                    ],
+                    answer: "B"
+                },
+                {
+                    question: "Quando a fé é testada, qual a promessa de Deus para quem persevera?",
+                    options: [
+                        "A) 'Bem-aventurado o homem que suporta a tentação; porque, quando for provado, receberá a coroa da vida.' (Tiago 1:12)",
+                        "B) 'Aquele que começou a boa obra em vós a aperfeiçoará.' (Filipenses 1:6)",
+                        "C) 'Sede fortes e corajosos. Não vos atemorizeis, nem vos espanteis.' (Josué 1:9)"
+                    ],
+                    answer: "A"
+                },
+                {
+                    question: "O que significa 'lançar sobre Ele toda a vossa ansiedade'?",
+                    options: [
+                        "A) Ignorar os problemas e esperar que sumam.",
+                        "B) Entregar a Deus nossas preocupações, confiando que Ele cuida de nós. (1 Pedro 5:7)",
+                        "C) Ficar passivo e não fazer nada para resolver a situação."
+                    ],
+                    answer: "B"
+                },
+                {
+                    question: "Como podemos saber que não estamos sozinhas em nossas lutas?",
+                    options: [
+                        "A) Pela ausência de problemas.",
+                        "B) Pela presença constante de Deus e o apoio de nossa família e amigos.",
+                        "C) Apenas quando tudo está dando certo."
+                    ],
+                    answer: "B"
+                },
+                {
+                    question: "Qual a atitude de Deus em relação aos que têm o coração quebrantado?",
+                    options: [
+                        "A) Ele se afasta para nos dar espaço.",
+                        "B) 'O Senhor está perto dos que têm o coração quebrantado e salva os de espírito oprimido.' (Salmos 34:18)",
+                        "C) Ele espera que nos recuperemos sozinhas."
+                    ],
+                    answer: "B"
+                },
+                {
+                    question: "Qual a maior prova do amor de Deus por nós?",
+                    options: [
+                        "A) As bênçãos materiais que recebemos.",
+                        "B) 'Porque Deus tanto amou o mundo que deu o seu Filho Unigênito, para que todo o que nele crer não pereça, mas tenha a vida eterna.' (João 3:16)",
+                        "C) A ausência de dificuldades em nossa vida."
+                    ],
+                    answer: "B"
+                }
+            ];
+
+            function loadQuestion(index) {
+                quizQuestionsDiv.innerHTML = ''; // Clear previous question
+                const q = questions[index];
+                const questionCard = document.createElement('div');
+                questionCard.classList.add('question-card');
+                questionCard.innerHTML = `
+                    <h3>${index + 1}. ${q.question}</h3>
+                    <div class="options">
+                        ${q.options.map((option, i) => `
+                            <label>
+                                <input type="radio" name="question${index}" value="${String.fromCharCode(65 + i)}">
+                                ${option}
+                            </label>
+                        `).join('')}
+                    </div>
+                `;
+                quizQuestionsDiv.appendChild(questionCard);
+
+                // Restore selected answer if exists
+                const savedAnswer = localStorage.getItem(`answer_q${index}`);
+                if (savedAnswer) {
+                    const radio = document.querySelector(`input[name="question${index}"][value="${savedAnswer}"]`);
+                    if (radio) radio.checked = true;
+                }
+
+                updateNavigationButtons();
+            }
+
+            function updateNavigationButtons() {
+                prevBtn.disabled = currentQuestionIndex === 0;
+                nextBtn.disabled = false; // Always enable next, will be handled by final section
+                if (currentQuestionIndex === questions.length - 1) {
+                    nextBtn.style.display = 'none';
+                    finalMessageSection.style.display = 'block';
+                } else {
+                    nextBtn.style.display = 'block';
+                    finalMessageSection.style.display = 'none';
+                }
+            }
+
+            function saveAnswer() {
+                const selectedOption = document.querySelector(`input[name="question${currentQuestionIndex}"]:checked`);
+                if (selectedOption) {
+                    localStorage.setItem(`answer_q${currentQuestionIndex}`, selectedOption.value);
+                }
+            }
+
+            prevBtn.addEventListener('click', function() {
+                saveAnswer();
+                if (currentQuestionIndex > 0) {
+                    currentQuestionIndex--;
+                    loadQuestion(currentQuestionIndex);
+                }
+            });
+
+            nextBtn.addEventListener('click', function() {
+                saveAnswer();
+                if (currentQuestionIndex < questions.length - 1) {
+                    currentQuestionIndex++;
+                    loadQuestion(currentQuestionIndex);
+                }
+            });
+
+            resultBtn.addEventListener('click', function() {
+                modal.style.display = 'flex';
                 setTimeout(() => {
-                    modal.classList.add('show'); // Trigger fade-in and scale-up
-                }, 10); // Small delay to allow display change to register
+                    modal.classList.add('show');
+                }, 10);
 
                 // Generate confetti
                 for (let i = 0; i < 100; i++) {
@@ -338,7 +512,7 @@
                 modal.classList.remove('show');
                 setTimeout(() => {
                     modal.style.display = 'none';
-                }, 500); // Match transition duration
+                }, 500);
             });
 
             window.addEventListener('click', function(event) {
@@ -346,7 +520,7 @@
                     modal.classList.remove('show');
                     setTimeout(() => {
                         modal.style.display = 'none';
-                    }, 500); // Match transition duration
+                    }, 500);
                 }
             });
 
@@ -363,6 +537,9 @@
                     confetti.remove();
                 });
             }
+
+            // Initial load
+            loadQuestion(currentQuestionIndex);
         });
     </script>
 </body>
